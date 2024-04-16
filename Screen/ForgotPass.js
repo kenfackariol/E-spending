@@ -1,32 +1,28 @@
-// In App.js in a new project
+// In App.js in a new projec
 import react, {useState} from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Pressable, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Pressable, KeyboardAvoidingView, Alert, TouchableOpacity } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from "yup";
+
+const SignupSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Email is Required'),
+  });
+
 
 
 export function ForgotPass(){
-    const [mail, setMail] = useState("")
-    const [errors, setErrors] = useState({})
-
-    const verify = () =>{
-        let errors = {}
-        
-        if (!mail) errors.mail = "Please Enter a Email"
-
-        setErrors(errors)
-        return Object.keys(errors).length === 0;
-      
-      };
-      const handleCheck = () =>{
-        
-        if (verify()){
-            console.log("checking....")
-            setMail("")
-            setErrors({})
-        } 
-      
-      };
+    
 
   return(
+    <Formik initialValues={{
+      email: '',
+    }}
+    validationSchema={SignupSchema}
+    onSubmit={values => Alert.alert('Checking....')}
+    >
+      {({values, errors, touched,handleChange, setFieldTouched, isValid, handleSubmit}) => (
     <KeyboardAvoidingView behavior='margin'
      keyboardVerticalOffset={10}
      style={styles.container}>
@@ -37,22 +33,25 @@ export function ForgotPass(){
     <TextInput  style={styles.input} 
     placeholder='Ex: ariolkenfack1@gmail.com' 
     keyboardType='email-address'
-    value={mail}
-    onChange={setMail}
+    value={values.email}
+    onChangeText={handleChange("email")}
+    onBlur={() => setFieldTouched('email')}
     />
-    {
-        errors.mail ?<Text style={styles.errorText}>{errors.mail}</Text>: null
-    }
-
-    <Pressable title='Create' style ={styles.button}
+        {
+        touched.email && errors.email && (<Text text30 style={styles.errorText}>
+        {errors.email}</Text>)
+        }
+    <TouchableOpacity title='Create' style ={styles.button}
     color={"lightgreen"}
-    onPress={handleCheck}>
+    onPress={handleSubmit}>
       <Text >Check Account</Text>
-      </Pressable>
+      </TouchableOpacity>
       
     </View>
     </ScrollView>
     </KeyboardAvoidingView >
+     )}
+    </Formik>
   );
 }
 
