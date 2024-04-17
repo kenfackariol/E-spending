@@ -8,15 +8,10 @@ import { StyleSheet, Text,
     TouchableOpacity,
     } from 'react-native';
 
-export function DashBoard({navigation}){
+export function Notification(){
     return(
         <View style={Mystyle.contener}>
-        <Text>DashBoard</Text>
-        <TouchableOpacity style={Mystyle.press}
-        onPress={() => navigation.navigate("SignIn")}
-        >
-            <Text text30>Log Out</Text>
-        </TouchableOpacity>
+        <Text>Notification</Text>
         </View>
     )
 }
@@ -25,11 +20,6 @@ const Mystyle = StyleSheet.create({
         flex:1,
         alignItems:'center',
         justifyContent:"center"
-    }, 
-    press:{
-        borderWidth:1,
-        borderRadius:2,
-        backgroundColor:'#fa0000',
     }
 }
 )

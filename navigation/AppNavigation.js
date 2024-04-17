@@ -3,18 +3,33 @@ import { SignUp } from '../Screen/SignUp';
 import { SignIn } from '../Screen/SignIn';
 import { ForgotPass } from '../Screen/ForgotPass';
 import { DashBoard } from '../Screen/DashBoard';
+import { Home } from '../Screen/Home';
+
+
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
   return (
     
-      <Stack.Navigator initialRouteName='Sign In'>
-        <Stack.Screen name='Sign In' component={SignIn}/>
-        <Stack.Screen name='Forgot Password' component={ForgotPass}/>
-        <Stack.Screen name='Sign Up' component={SignUp}/>
-        <Stack.Screen name='Dash' component={DashBoard}/>
+      <Stack.Navigator initialRouteName='SignIn'>
+        <Stack.Screen 
+        name='SignIn' 
+        options={{
+          title: "Login",
+          
+        }}
+        component={SignIn}/>
+        <Stack.Screen name='ForgotPassword' component={ForgotPass}/>
+        <Stack.Screen name='SignUp' component={SignUp}/>
+        <Stack.Screen name='Dash'
+         component={DashBoard}/>
+        <Stack.Screen name='Home'
         
+        options={{
+          title: 'Are you Ready?',
+        }}
+        component={Home}/>
       </Stack.Navigator>
 
   );

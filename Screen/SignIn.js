@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet, Text,
   View, Alert,
-  TextInput, Pressable,
+  TextInput, 
   Image, ActivityIndicator,
   ScrollView,
   KeyboardAvoidingView,
@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
+
 
 const index_logo = require("../assets/7849.jpg");
 
@@ -27,22 +28,16 @@ export function SignIn({ navigation }) {
   const validateForm = () => {
 
     let errors = {}
-
     if (!username) errors.username = "Email is required"
-
-
     if (!password) errors.password = "Password is required"
-
     setErrors(errors)
-
     return Object.keys(errors).length === 0;
-
   };
   const handleSubmit = () => {
     if (validateForm()) {
       console.log("Submited", username, password)
       const goToDash = () => {
-        navigation.navigate('Dash');
+        navigation.navigate('Home');
       }
       setUsername("");
       setPassword("");
@@ -73,7 +68,7 @@ export function SignIn({ navigation }) {
           </View>
           {errors.password ? <Text style={[styles.errorText, { marginBottom: 10 }]}>{errors.password}</Text> : null}
   
-          <TouchableOpacity onPress={() => navigation.navigate("Forgot Password")}>
+          <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
             <Text style={{ fontSize: 10, color: "grey", marginVertical: 10, textAlign: "right" }}>Forgot password?</Text>
           </TouchableOpacity>
   
@@ -82,7 +77,7 @@ export function SignIn({ navigation }) {
               <Text style={{ color: "white" }}>Submit</Text>
             </TouchableOpacity>
   
-            <TouchableOpacity style={[styles.button, styles.createButton]} onPress={() => navigation.navigate("Sign Up")}>
+            <TouchableOpacity style={[styles.button, styles.createButton]} onPress={() => navigation.navigate("SignUp")}>
               <Text>Sign Up</Text>
             </TouchableOpacity>
           </View>

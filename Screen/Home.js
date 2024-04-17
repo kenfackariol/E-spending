@@ -10,7 +10,7 @@ import { StyleSheet, Text,
     
     import Ionicons from "@expo/vector-icons/Ionicons";
 
-export function Home(navigation) {
+export function Home({navigation}) {
 
     return(
         <SafeAreaView style={styles.contener} >
@@ -19,7 +19,7 @@ export function Home(navigation) {
         </View>
         <TouchableOpacity 
         style={{backgroundColor:"#F8C471", padding:20, width:"90%", borderRadius:10, flexDirection:'row', justifyContent:"space-between"} }
-        onPress={() => navigate("Sing Up")}>
+        onPress={() => navigation.navigate("Dash")}>
             <Text text30 style={{fontStyle:"italic", fontWeight:"bold"}}>Let's go!!</Text>
             <Ionicons name='chevron-forward-outline' color={"black"} size={22}/>
         </TouchableOpacity>
