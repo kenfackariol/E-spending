@@ -16,6 +16,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as SQlite from 'expo-sqlite';
 import { SQLite } from 'expo';
 
+
 const logo = require("../assets/Mobile-login-Cristina.jpg");
 
 const screenWidth = Dimensions.get('window').width;
@@ -33,15 +34,7 @@ export function SignUp() {
   const [cpass, setCpass] = useState("")
   const [verifCpass, setVerifCpass] = useState(false)
 
-  const createTables = () =>
-    db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT,'
-        + ' name TEXT, email TEXT, phone INTEGER, password TEXT);')
-      tx.executeSql('CREATE TABLE IS NOT EXISTS revenu (id-rev INTEGER PRIMARY KEY AUTOINCREMENT, montant FLOAT );')
-      tx.executeSql('CREATE TABLE IF NOT EXISTS depense (id_dep INTEGER PRIMARY KEY AUTOINCREMENT,'
-        + ' Motif TEXT, Montant FLOAT, date DATE);')
-      tx.executeSql('CREATE TABLE IF NOT EXISTS notification(id_notif INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT);')
-    })
+  
 
 
 
