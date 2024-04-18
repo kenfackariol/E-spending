@@ -6,6 +6,8 @@ import { ForgotPass } from '../Screen/ForgotPass';
 import { DashBoard } from '../Screen/DashBoard';
 import { Home } from '../Screen/Home';
 import { initDB } from '../utils/database';
+/*import { SuppTable } from '../utils/database';*/
+
 
 
 const Stack = createNativeStackNavigator();
@@ -29,7 +31,6 @@ export default function AppNavigation() {
         name='SignIn' 
         options={{
           title: "Login",
-          
         }}
         component={SignIn}/>
         <Stack.Screen name='ForgotPassword' component={ForgotPass}/>
@@ -37,7 +38,6 @@ export default function AppNavigation() {
         <Stack.Screen name='Dash'
          component={DashBoard}/>
         <Stack.Screen name='Home'
-        
         options={{
           title: 'Are you Ready?',
         }}

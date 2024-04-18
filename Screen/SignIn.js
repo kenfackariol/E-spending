@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { checkUser } from '../utils/database';
 
 
 const index_logo = require("../assets/7849.jpg");
@@ -33,16 +34,36 @@ export function SignIn({ navigation }) {
     setErrors(errors)
     return Object.keys(errors).length === 0;
   };
+
   const handleSubmit = () => {
     if (validateForm()) {
-      console.log("Submited", username, password)
+      //console.log("Submited", username, password)
+      checkUser(username, password)
+  .then(user => {
+    if (user) {
+      // L'utilisateur existe, vous pouvez accéder à ses données
+      console.log('Utilisateur trouvé :', user);
       const goToDash = () => {
         navigation.navigate('Home');
       }
       setUsername("");
       setPassword("");
       setErrors({});
+      Alert.alert("Bonjour", username)
       goToDash();
+    } else {
+      // L'utilisateur n'existe pas
+      console.log('Utilisateur non trouvé');
+      Alert.alert("nom ou password \nIncorrect")
+      setUsername("")
+      setPassword("")
+    }
+  })
+  .catch(error => {
+    // Une erreur s'est produite lors de la vérification de l'utilisateur
+    console.error('Erreur lors de la vérification de l\'utilisateur :', error);
+  });
+      
     }
   }
 

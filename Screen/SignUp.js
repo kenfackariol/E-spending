@@ -13,16 +13,16 @@ import {
 } from 'react-native';
 import { useEffect } from 'react';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import * as SQlite from 'expo-sqlite';
-import { SQLite } from 'expo';
+import { createUser } from '../utils/database';
+
+
 
 
 const logo = require("../assets/Mobile-login-Cristina.jpg");
 
 const screenWidth = Dimensions.get('window').width;
 
-export function SignUp() {
-  const db = SQlite.openDatabase('myBase.db');
+export function SignUp({navigation}) {
   const [name, setName] = useState("")
   const [verifName, setVerifName] = useState(false)
   const [email, setEmail] = useState("")
@@ -34,7 +34,6 @@ export function SignUp() {
   const [cpass, setCpass] = useState("")
   const [verifCpass, setVerifCpass] = useState(false)
 
-  
 
 
 
@@ -47,6 +46,7 @@ export function SignUp() {
     if (nameVar.length > 2) {
       setName(nameVar);
       setVerifName(true);
+      
     }
   }
   function handleEmail(e) {
@@ -56,6 +56,7 @@ export function SignUp() {
     if (/^[\w.%+=]+@[\w.=]+\.[a-zA-Z]{2,}$/.test(emailVar)) {
       setEmail(emailVar);
       setVerifEmail(true);
+      
     }
   }
 
@@ -94,14 +95,30 @@ export function SignUp() {
 
   function handleSubmit() {
     if (verifName == true && verifEmail == true && verifPhone == true && verifPass == true && verifCpass == true) {
-      const insert = () => {
-        db.transaction(tx => {
-          tx.executeSql('INSERT INTO user (name, email, phone, password)'
-            + ' VALUES (?, ?, ?, ?);')
+      /*console.log(name)
+      console.log(email)
+      console.log(phone)
+      console.log(pass)*/
+
+      //insert user
+      createUser(name, email, phone, pass)
+        .then(insertId => {
+        // L'insertion de l'utilisateur a réussi
+        console.log('Utilisateur inséré avec succès, ID d insertion :', insertId);
         })
-        return true
+      .catch(error => {
+      // Une erreur s'est produite lors de l'insertion de l'utilisateur
+        console.error('Erreur lors de l insertion de l utilisateur :', error);
+      });
+      Alert.alert("Welcome ", name, "\ngo to login?")
+      const goToLogin = () => {
+        navigation.navigate('SignIn');
       }
+      goToLogin();
+      
+        
     }
+    else Alert.alert("Tous les champs sont obligatoires")
   }
 
 
@@ -112,7 +129,7 @@ export function SignUp() {
       <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
         <View style={styles.formulaire}>
           <View style={{ alignItems: "center" }}>
-            <Image source={logo} style={{ width: screenWidth*0.9, height: 250, }} />
+            <Image source={logo} style={{ width: screenWidth*0.85, height: 250, }} />
           </View>
 
 
@@ -273,7 +290,7 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   input: {
-    width: screenWidth * 0.8,
+    width: screenWidth * 0.785,
     borderWidth: 1,
     height: 40,
     borderColor: "orange",

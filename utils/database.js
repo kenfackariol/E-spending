@@ -1,11 +1,13 @@
 import * as SQLite from 'expo-sqlite';
 
+const db = SQLite.openDatabase('expenses.db');
+
 export function initDB() {
   return new Promise((resolve, reject) => {
-    const db = SQLite.openDatabase('expenses.db');
+    
 
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, mot_de_passe TEXT)');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, numero INTEGER, mot_de_passe TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Categorie (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, type TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, date TEXT, commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, periode TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
@@ -19,13 +21,12 @@ export function initDB() {
   });
 }
 
-
-export const createUser = (nom, email, mot_de_passe) => {
+export const createUser = (nom, email, numero, mot_de_passe) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO Utilisateur (nom, email, mot_de_passe) VALUES (?, ?, ?)',
-        [nom, email, mot_de_passe],
+        'INSERT INTO Utilisateur (nom, email, numero, mot_de_passe) VALUES (?, ?, ?, ?)',
+        [nom, email, numero, mot_de_passe],
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
           else reject('Error inserting user');
@@ -36,12 +37,12 @@ export const createUser = (nom, email, mot_de_passe) => {
   });
 };
 
-export const updateUser = (id, nom, email, mot_de_passe) => {
+export const updateUser = (id, nom, email, numero, mot_de_passe) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE Utilisateur SET nom = ?, email = ?, mot_de_passe = ? WHERE id = ?',
-        [nom, email, mot_de_passe, id],
+        'UPDATE Utilisateur SET nom = ?, email = ?,numero = ?, mot_de_passe = ? WHERE id = ?',
+        [nom, email, numero, mot_de_passe, id],
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve();
           else reject('Error updating user');
@@ -80,6 +81,20 @@ export const getUsers = () => {
     });
   });
 };
+
+export const checkUser = (nom, mot_de_passe) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Utilisateur WHERE nom = ? AND mot_de_passe = ?',
+        [nom, mot_de_passe],
+        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
 
 export const getUser = (id) => {
   return new Promise((resolve, reject) => {
