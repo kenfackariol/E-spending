@@ -100,7 +100,9 @@ const AppDrawer = () => {
           }}
           component={Setting} />
 
-        <Drawer.Screen name="Auth" component={AuthStack} />
+        <Drawer.Screen 
+          name="Auth" component={AuthStack} 
+        />
         <Drawer.Screen name="Home"
           options={{
             title: 'Are you Ready?',
