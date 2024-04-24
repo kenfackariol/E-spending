@@ -13,7 +13,7 @@ export function DashBoard({navigation}){
         <View style={Mystyle.contener}>
         <Text>DashBoard</Text>
         <TouchableOpacity style={Mystyle.press}
-        onPress={() => navigation.navigate("SignIn")}
+        onPress={() => navigation.navigate("Auth", {screen: "SignIn"})}
         >
             <Text text30>Log Out</Text>
         </TouchableOpacity>

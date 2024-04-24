@@ -1,25 +1,26 @@
-import React, {useState} from "react";
-import { StyleSheet, Text, 
-    View,Alert, 
+import React, { useState } from "react";
+import {
+    StyleSheet, Text,
+    View, Alert,
     TextInput, Pressable,
     Image, ActivityIndicator,
     ScrollView,
     KeyboardAvoidingView,
     TouchableOpacity,
-    } from 'react-native';
+} from 'react-native';
 
-export function SpensingHistory(){
-    return(
+export default function SpendingHistory() {
+    return (
         <View style={Mystyle.contener}>
-        <Text>History</Text>
+            <Text>History</Text>
         </View>
     )
 }
 const Mystyle = StyleSheet.create({
     contener: {
-        flex:1,
-        alignItems:'center',
-        justifyContent:"center"
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: "center"
     }
 }
 )

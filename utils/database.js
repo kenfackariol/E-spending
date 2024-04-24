@@ -1,13 +1,12 @@
 import * as SQLite from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system';
 
 const db = SQLite.openDatabase('expenses.db');
 
 export function initDB() {
   return new Promise((resolve, reject) => {
-    
-
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, numero INTEGER, mot_de_passe TEXT)');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT UNIQUE, email TEXT UNIQUE, numero INTEGER UNIQUE, mot_de_passe TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Categorie (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, type TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, date TEXT, commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, periode TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
@@ -20,6 +19,19 @@ export function initDB() {
     });
   });
 }
+
+
+export const resetDB = () => {
+  return new Promise((resolve, reject) => {
+    // Get the correct path to the database file
+    const dbPath = FileSystem.documentDirectory + 'SQLite/expenses.db';
+
+    FileSystem.deleteAsync(dbPath)
+      .then(() => resolve("Database reset successfully"))
+      .catch((error) => reject(error));
+  });
+};
+
 
 export const createUser = (nom, email, numero, mot_de_passe) => {
   return new Promise((resolve, reject) => {
@@ -108,6 +120,46 @@ export const getUser = (id) => {
     });
   });
 };
+
+export const getUserByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Utilisateur WHERE email = ?',
+        [email],
+        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getUserUsername = (nom) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Utilisateur WHERE nom = ?',
+        [nom],
+        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getUserByPhone = (phone) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Utilisateur WHERE numero = ?',
+        [phone],
+        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
 
 
 export const createCategory = (nom, type) => {

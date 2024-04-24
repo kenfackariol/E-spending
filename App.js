@@ -1,14 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
-import AppNavigation from './navigation/AppNavigation';
+import React from 'react';
+import 'react-native-gesture-handler';
+import AppDrawer from './navigation/AppDrawer';
 
 export default function App() {
 
   return (
-    <NavigationContainer>
-      <StatusBar style='auto' backgroundColor='#fff' />
-      <AppNavigation />
-    </NavigationContainer>
+    <AppDrawer />
   );
 }
 

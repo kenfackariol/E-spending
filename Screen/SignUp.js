@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useEffect } from 'react';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { createUser } from '../utils/database';
+import { createUser, getUserUsername, getUserByEmail, getUserByPhone } from '../utils/database';
 
 
 
@@ -22,7 +22,7 @@ const logo = require("../assets/Mobile-login-Cristina.jpg");
 
 const screenWidth = Dimensions.get('window').width;
 
-export function SignUp({navigation}) {
+export function SignUp({ navigation }) {
   const [name, setName] = useState("")
   const [verifName, setVerifName] = useState(false)
   const [email, setEmail] = useState("")
@@ -46,7 +46,7 @@ export function SignUp({navigation}) {
     if (nameVar.length > 2) {
       setName(nameVar);
       setVerifName(true);
-      
+
     }
   }
   function handleEmail(e) {
@@ -56,7 +56,7 @@ export function SignUp({navigation}) {
     if (/^[\w.%+=]+@[\w.=]+\.[a-zA-Z]{2,}$/.test(emailVar)) {
       setEmail(emailVar);
       setVerifEmail(true);
-      
+
     }
   }
 
@@ -93,30 +93,74 @@ export function SignUp({navigation}) {
     }
   }
 
-  function handleSubmit() {
+  const goToLogin = () => {
+    navigation.navigate('Auth', { screen: 'SignIn' });
+  }
+
+  const checkForDuplicate = async (field, value, method) => {
+    const user = await method(value);
+    // console.log(user, field, value, method);
+    if (user) {
+      Alert.alert(
+        "Error",
+        `User with ${field} ${value} already exists`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Do something
+            },
+          },
+        ]
+      );
+      return true;
+    }
+    return false;
+  }
+
+  async function handleSubmit() {
     if (verifName == true && verifEmail == true && verifPhone == true && verifPass == true && verifCpass == true) {
-      /*console.log(name)
-      console.log(email)
-      console.log(phone)
-      console.log(pass)*/
+      // convertir le numero en entier
+      let numero = parseInt(phone);
+
+      // checking for uniqueness
+      try {
+        // unique username
+        let res = await checkForDuplicate("username", name, getUserUsername);
+        if (res) return;
+        // unique email
+        res = await checkForDuplicate("email", email, getUserByEmail);
+        if (res) return;
+        // unique phone
+        res = await checkForDuplicate("numero", numero, getUserByPhone);
+        if (res) return;
+      } catch (error) {
+        console.log(error);
+      }
 
       //insert user
-      createUser(name, email, phone, pass)
+      createUser(name, email, numero, pass)
         .then(insertId => {
-        // L'insertion de l'utilisateur a réussi
-        console.log('Utilisateur inséré avec succès, ID d insertion :', insertId);
+          // L'insertion de l'utilisateur a réussi
+          console.log('Utilisateur inséré avec succès, ID d insertion :', insertId);
+          Alert.alert(
+            "Welcome ",
+            name,
+            [
+              {
+                text: "Go to login?",
+                onPress: () => {
+                  // Handle the button press
+                  goToLogin();
+                },
+              },
+            ]
+          );
         })
-      .catch(error => {
-      // Une erreur s'est produite lors de l'insertion de l'utilisateur
-        console.error('Erreur lors de l insertion de l utilisateur :', error);
-      });
-      Alert.alert("Welcome ", name, "\ngo to login?")
-      const goToLogin = () => {
-        navigation.navigate('SignIn');
-      }
-      goToLogin();
-      
-        
+        .catch(error => {
+          // Une erreur s'est produite lors de l'insertion de l'utilisateur
+          console.error('Erreur lors de l insertion de l utilisateur :', error);
+        });
     }
     else Alert.alert("Tous les champs sont obligatoires")
   }
@@ -129,7 +173,7 @@ export function SignUp({navigation}) {
       <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
         <View style={styles.formulaire}>
           <View style={{ alignItems: "center" }}>
-            <Image source={logo} style={{ width: screenWidth*0.85, height: 250, }} />
+            <Image source={logo} style={{ width: screenWidth * 0.85, height: 250, }} />
           </View>
 
 
@@ -224,7 +268,6 @@ export function SignUp({navigation}) {
           <View style={styles.spaceInput}>
             <Ionicons name='lock-closed' color={"orange"} size={40} />
 
-
             <TextInput
               placeholder='Confirm the password'
               style={styles.input}
@@ -244,19 +287,12 @@ export function SignUp({navigation}) {
               verifCpass ? null
                 : (<Text style={styles.errorText}>Password is not comfirm</Text>)
           }
-
-
           <TouchableOpacity
             style={[styles.button, styles.alertcolor]}
             onPress={handleSubmit}
           >
-
-
             <Text >Submit</Text>
           </TouchableOpacity>
-
-
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

@@ -34,7 +34,11 @@ export function SignIn({ navigation }) {
     setErrors(errors)
     return Object.keys(errors).length === 0;
   };
-
+  
+  const goToDash = () => {
+    navigation.navigate('Home');
+  }
+  
   const handleSubmit = () => {
     if (validateForm()) {
       //console.log("Submited", username, password)
@@ -43,9 +47,6 @@ export function SignIn({ navigation }) {
     if (user) {
       // L'utilisateur existe, vous pouvez accéder à ses données
       console.log('Utilisateur trouvé :', user);
-      const goToDash = () => {
-        navigation.navigate('Home');
-      }
       setUsername("");
       setPassword("");
       setErrors({});
