@@ -10,6 +10,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { initDB, resetDB } from '../utils/database';
 import AuthStack from './AuthStack';
 import { useEffect } from 'react';
+import { AddExpense } from '../Screen/AddExpense';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -37,18 +39,18 @@ const AppDrawer = () => {
     <NavigationContainer>
       <StatusBar style='auto' backgroundColor='#fff' />
       <Drawer.Navigator
-        initialRouteName='DashBoard'
+        initialRouteName='Dashboard'
         screenOptions={{
           drawerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: "#f4f4f5",
             width: 250,
           },
           headerStyle: {
             backgroundColor: "#fff"
           },
-          headerTintColor: "#fff",
+          headerTintColor: "black",
           headerTitleStyle: {
-            fontWeight: "bold"
+            fontWeight: '900'
           },
           drawerActiveTintColor: "blue",
           drawerLabelStyle: {
@@ -66,6 +68,17 @@ const AppDrawer = () => {
             )
           }}
           component={DashBoard} />
+
+<Drawer.Screen name="addExp"
+          options={{
+            drawerLabel: "Add expense",
+            drawerType: 'slide',
+            title: "Add Expense",
+            drawerIcon: () => (
+              <Ionicons name='add-circle-sharp' size={20} color={"#808080"} />
+            )
+          }}
+          component={AddExpense} />
 
         <Drawer.Screen name="history"
           options={{

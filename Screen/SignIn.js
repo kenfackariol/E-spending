@@ -1,6 +1,7 @@
 // In App.js in a new project
 
 import react, { useState } from 'react';
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet, Text,
@@ -14,11 +15,26 @@ import {
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { checkUser } from '../utils/database';
+//import { initDB } from '../utils/database';
+
+
 
 
 const index_logo = require("../assets/7849.jpg");
 
 const screenWidth = Dimensions.get('window').width;
+
+ // initialize database
+ /*useEffect(() => {
+  initDB()
+      .then(() => {
+          console.log('Database initialized');
+      })
+      .catch((error) => {
+          console.error('Error initializing database:', error);
+      })
+}, []);*/
+
 
 export function SignIn({ navigation }) {
   const [username, setUsername] = useState("");
@@ -56,7 +72,6 @@ export function SignIn({ navigation }) {
       // L'utilisateur n'existe pas
       console.log('Utilisateur non trouvé');
       Alert.alert("nom ou password \nIncorrect")
-      setUsername("")
       setPassword("")
     }
   })
@@ -121,7 +136,6 @@ const styles = StyleSheet.create({
   },
   formulaire: {
     marginTop: 0,
-
     backgroundColor: "#FFF",
     alignContent: "center",
     borderRadius: 10,

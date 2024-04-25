@@ -3,19 +3,35 @@ import * as FileSystem from 'expo-file-system';
 
 const db = SQLite.openDatabase('expenses.db');
 
+export function dropTable() {
+  return new Promise((resolve, reject) => {
+    
+
+    db.transaction(tx => {
+    
+      tx.executeSql('DROP TABLE Depense');
+     
+    }, (error) => {
+      reject(`Error drop database: ${error}`);
+    }, () => {
+      resolve('Table DELETED');
+    });
+  });
+}
+
 export function initDB() {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT UNIQUE, email TEXT UNIQUE, numero INTEGER UNIQUE, mot_de_passe TEXT)');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Categorie (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, type TEXT)');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, date TEXT, commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, numero INTEGER, mot_de_passe TEXT)');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, categorie TEXT, montant REAL, date VARCHAR(10), commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, periode TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Objectif (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant_cible REAL, date_limite TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Objectif (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, montant_cible REAL, date_limite TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense_Obj (id INTEGER PRIMARY KEY AUTOINCREMENT, id_depense INTEGER, id_objectif INTEGER, FOREIGN KEY (id_depense) REFERENCES Depense(id), FOREIGN KEY (id_objectif) REFERENCES Objectif(id))');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Notification (id_message INTEGER PRIMARY KEY AUTOINCREMENT,dateN TEXT, notifs TEXT);');
     }, (error) => {
       reject(`Error initializing database: ${error}`);
     }, () => {
-      resolve('Databse initialized successfully');
+      resolve('Database initialized successfully');
     });
   });
 }
@@ -236,12 +252,12 @@ export const getCategory = (id) => {
   });
 }
 
-export const createExpense = (id_utilisateur, id_categorie, montant, date, commentaire) => {
+export const createExpense = (id_utilisateur, categorie, montant, date, commentaire) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO Depense (id_utilisateur, id_categorie, montant, date, commentaire) VALUES (?, ?, ?, ?, ?)',
-        [id_utilisateur, id_categorie, montant, date, commentaire],
+        'INSERT INTO Depense (id_utilisateur, categorie, montant, date, commentaire) VALUES (?, ?, ?, ?, ?)',
+        [id_utilisateur, categorie, montant, date, commentaire],
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
           else reject('Error inserting expense');
