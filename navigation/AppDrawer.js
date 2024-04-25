@@ -56,8 +56,8 @@ const AppDrawer = () => {
           drawerLabelStyle: {
             color: '#111'
           }
-        }}
-      >
+        }}>
+          
         <Drawer.Screen name="Dashboard"
           options={{
             drawerLabel: "Dashboard",

@@ -2,21 +2,50 @@ import React, { useState } from "react";
 import {
     StyleSheet, Text,
     View, Alert,
-    TextInput, Pressable,
-    Image, ActivityIndicator,
+    Modal,
     ScrollView,
-    KeyboardAvoidingView,
     TouchableOpacity,
     Dimensions,
+    Button
 } from 'react-native';
-import { getExpenses } from "../utils/database";
+import { getExpenses, getExpense } from "../utils/database";
 import { useEffect } from "react";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { TextInput } from "react-native-gesture-handler";
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function SpendingHistory({navigation}) {
-    const [expenses, setExpenses] = useState([])
+    const [expenses, setExpenses] = useState([]);
+    const [exp, setExp] = useState({})
+    const [isModalVisible, setIsModalVisible]=useState(false);
+    const [inputVisible, setInputVisible]= useState(false)
+
+    const closeModal = () => {
+      setIsModalVisible(false)
+      setInputVisible(false)
+    }
+
+    function editInput(){
+      setInputVisible(true);
+    }
+
+    function displayExpense(id){
+      setIsModalVisible(true)
+      getExpense(id)
+        .then(expense  => {
+          setExp(expense)
+          console.log(expense)
+        })
+        .catch(error => {
+          console.error(error);
+        })
+    }
+
+    function handleUpdate(){
+
+    }
 
     useEffect(() => {
         getExpenses()
@@ -49,7 +78,9 @@ export default function SpendingHistory({navigation}) {
                 <View key ={expense.id} style={styles.row}>
                     <TouchableOpacity 
                     style={[ styles.cell, {textAlign:"center", backgroundColor:"#ABB2B9", }]}
-                    onPress={() => console.log('pressed')}>
+                    onPress={() => 
+                      displayExpense(expense.id)
+                    }>
                     <View>
                     <Text style={{color: "white"}}>{expense.id}</Text>
                     </View>
@@ -69,6 +100,62 @@ export default function SpendingHistory({navigation}) {
             
         </TouchableOpacity>
         
+            </View>
+            <View 
+            >
+
+              <Modal visible={isModalVisible}
+                animationType="slide"
+                onRequestClose={closeModal}
+              
+              >
+                 <View 
+                   style={{
+                    flex:1,
+                    alignItems: "center",
+                    justifyContent:"center",
+                    padding: 10
+                  }}
+            >
+
+              <TextInput
+              style={styles.input}
+              value={exp.categorie}
+              editable={inputVisible}
+              />
+               <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={exp.montant+""}
+              editable={inputVisible}
+              />
+
+              
+              
+              <TextInput
+              style={styles.input}
+              value={exp.date}
+              editable={inputVisible}/>
+
+              <TextInput
+              style={styles.input}
+              value={exp.commentaire}
+              editable={inputVisible}/>
+
+              <Button title="Edit" 
+               onPress={editInput}/>
+
+              <TouchableOpacity onPress={closeModal}
+                style={{backgroundColor:'#F1948A', width: screenWidth * 0.272, padding:5, marginBottom: 8}}>
+                <Text style={{color:"white", textAlign: "center"}}>Close</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={() => console.log("updating.....") }
+                style={{backgroundColor:'#48C9B0', width: screenWidth * 0.272, padding:5}}>
+                <Text style={{color:"white", textAlign: "center"}}>Update</Text>
+              </TouchableOpacity>
+               </View>
+              </Modal>
             </View>
              
         </View>
@@ -103,6 +190,14 @@ const styles = StyleSheet.create({
         flex: 0,
         alignItems:"center",
         paddingVertical: 5,
+      },
+      input: {
+        width: screenWidth * 0.785,
+        borderWidth: 1,
+        height: 40,
+        borderColor: "orange",
+        padding: 10,
+        borderRadius: 5
       },
 
 }
