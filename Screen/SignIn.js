@@ -66,7 +66,7 @@ export function SignIn({ navigation }) {
       setUsername("");
       setPassword("");
       setErrors({});
-      Alert.alert("Bonjour", username)
+      Alert.alert("Merci", username)
       goToDash();
     } else {
       // L'utilisateur n'existe pas

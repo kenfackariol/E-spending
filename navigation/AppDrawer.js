@@ -5,6 +5,7 @@ import { DashBoard } from '../Screen/DashBoard';
 import { Setting } from '../Screen/Setting';
 import { Notification } from '../Screen/Notification';
 import SpendingHistory from '../Screen/SpendingHistory';
+import { Account } from '../Screen/Account';
 import { Home } from '../Screen/Home';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { initDB, resetDB } from '../utils/database';
@@ -34,7 +35,7 @@ const initializeDB = async () => {
     //let int = await initCategories();
     //console.log(int);
     let cats = await getCategories();
-    console.log(cats);
+   
   }
   catch(error){
     console.log(error);
@@ -133,6 +134,17 @@ const AppDrawer = () => {
             )
           }}
           component={Setting} />
+
+<Drawer.Screen name="Account"
+          options={{
+            drawerLabel: "Account",
+            drawerType: 'slide',
+            title: "Account",
+            drawerIcon: () => (
+              <Ionicons name='person-outline' size={20} color={"#808080"} />
+            )
+          }}
+          component={Account} />
 
         <Drawer.Screen 
           name="Auth" component={AuthStack} 

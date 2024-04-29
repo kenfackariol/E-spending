@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { getUser } from '../utils/database';
 
 const DrawerHeader = () => {
@@ -24,12 +24,14 @@ const DrawerHeader = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity >
       <View
         source={require('../assets/19199299.jpg')}
         style={styles.arealetter}
       >
         <Text style={{fontSize: 40, fontWeight:"bold", color: "white"}}>{l}</Text>
       </View>
+      </TouchableOpacity>
       <Text style={styles.text}>{letter.email}</Text>
     </View>
   );

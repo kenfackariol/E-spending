@@ -286,7 +286,7 @@ export const getExpenses = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Depense',
+        'SELECT Depense.id, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id',
         [],
         (_, { rows }) => resolve(rows._array),
         (_, error) => reject(error)
@@ -299,7 +299,7 @@ export const getExpense = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Depense WHERE id = ?',
+        'SELECT Depense.id, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id WHERE Depense.id = ?',
         [id],
         (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
         (_, error) => reject(error)
@@ -312,7 +312,7 @@ export const getExpenseByCatId = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Depense WHERE categorie = ?',
+        'SELECT * FROM Depense WHERE id_categorie = ?',
         [id],
         (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
         (_, error) => reject(error)
@@ -321,12 +321,12 @@ export const getExpenseByCatId = (id) => {
   });
 }
 
-export const updateExpense = (id, id_utilisateur, categorie, montant, date, commentaire) => {
+export const updateExpense = (id, id_utilisateur, id_categorie, montant, date, commentaire) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE Depense SET id_utilisateur = ?, categorie = ?, montant = ?, date = ?, commentaire = ? WHERE id = ?',
-        [id_utilisateur, categorie, montant, date, commentaire, id],
+        'UPDATE Depense SET id_utilisateur = ?, id_categorie = ?, montant = ?, date = ?, commentaire = ? WHERE id = ?',
+        [id_utilisateur, id_categorie, montant, date, commentaire, id],
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve();
           else reject('Error updating expense');
