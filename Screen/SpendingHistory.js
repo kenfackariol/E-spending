@@ -8,11 +8,15 @@ import {
     Dimensions,
     Button
 } from 'react-native';
-import { getExpenses, getExpense } from "../utils/database";
+import { getExpenses, getExpense , getCategories} from "../utils/database";
 import { useEffect } from "react";
-
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";
+import { updateExpense } from "../utils/database";
+import { deleteExpense } from "../utils/database";
+import { Dropdown } from 'react-native-element-dropdown';
+
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -21,10 +25,69 @@ export default function SpendingHistory({navigation}) {
     const [exp, setExp] = useState({})
     const [isModalVisible, setIsModalVisible]=useState(false);
     const [inputVisible, setInputVisible]= useState(false)
+    const [cats, setCats] = useState([])
+  
+    //gestion
+    const data  = [
+      {label: 'Alimentaire', value: "1"},
+      {label: 'Vestimentaire', value: "2"},
+      {label: 'Transport', value: "3"},
+      {label: 'Education', value: "4"},
+      {label: 'Divertissement', value: "5"},
+      {label: 'Impot', value: "6"},
+      {label: 'Autre', value: "7"},
+      {label: 'Tous', value: "8"}
+    ]
+    
+      const [valeur, setValeur] = useState(null);
+      const handleChange = (value) => {
+        setValeur(value.label)
+        console.log(valeur)
+        
+      }
+    
+    function closeModal(){
+      if(inputVisible == true){
+        Alert.alert("Abandonner les\nmodification?", "", [
+          {
+            text : "No",
+            onPress: () => null
+          },
+          {
+            text: "yes",
+            onPress: () => {
+              setInputVisible(false)
+              setIsModalVisible(false)
+            }
+          }
+        ])
+      }
+      else{
+        setInputVisible(false)
+        setIsModalVisible(false)
+      }
+      
+    }
 
-    const closeModal = () => {
-      setIsModalVisible(false)
-      setInputVisible(false)
+   
+
+    //methode pour refraiche la page
+    function refreshPage(){
+      getExpenses()
+          .then(expenses => {
+            setExpenses(expenses)
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        getCategories()
+        .then(cats => {
+          setCats(cats)
+          console.log(cats);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
 
     function editInput(){
@@ -36,58 +99,153 @@ export default function SpendingHistory({navigation}) {
       getExpense(id)
         .then(expense  => {
           setExp(expense)
-          console.log(expense)
         })
         .catch(error => {
           console.error(error);
         })
+        
+    }
+    //controle des champ pour le update
+    
+    function handleCategorie(e) {
+      //const catVar = e.nativeEvent.text;
+      //exp.categorie = catVar
+      //destitution de l'objet exp de la depense
+      const newobj = {...exp}
+      newobj.categorie = e
+      setExp(newobj)
+      
     }
 
+    function handleMontant(e) {
+      //const catVar = e.nativeEvent.text;
+      //exp.categorie = catVar
+      //destitution de l'objet exp de la depense
+      const newobj = {...exp}
+      newobj.montant = e
+        setExp(newobj) 
+    }
+
+    function handleComment(e) {
+      //const catVar = e.nativeEvent.text;
+      //exp.categorie = catVar
+      //destitution de l'objet exp de la depense
+      const newobj = {...exp}
+      newobj.commentaire = e
+        setExp(newobj)
+    }
+  // methode pour la modification d'une depense
     function handleUpdate(){
-
+      console.log(exp);
+      if (/^\d+(\.\d{1,2})?$/.test(exp.montant) && exp.montant >0){
+        Alert.alert("Valider la modification?", "", [
+          {
+            text: 'Non',
+            onPress: () => null
+          }, 
+          {
+            text: "Oui",
+            onPress: () => updateExpense(exp.id, exp.id_utilisateur, exp.categorie, exp.montant, exp.date, exp.commentaire)
+            .then(expUpt => {
+              refreshPage();
+              Alert.alert(`Depense\nmodifiée`);
+            })
+            .catch(error => {
+              console.error(error);
+            })
+          }
+        ])
+      }
+      else Alert.alert("Le montant doit être\nun nombre")
     }
 
-    useEffect(() => {
-        getExpenses()
-          .then(expenses => {
-            setExpenses(expenses)
-            
-            
+    //methode pour la suppression
+    function deleteExp(){
+      Alert.alert("Voulez-vous vraiment\supprimer?", "", [
+        {
+          text: 'Non',
+          onPress: () => null
+        },
+        {
+          text : "Oui",
+          onPress : () => deleteExpense(exp.id)
+          .then(expDel => {
+            refreshPage();
+            Alert.alert(`Depense\nSupprimée`);
+            refreshPage()
+            setIsModalVisible(false)
           })
           .catch(error => {
             console.error(error);
-          });
-        }, []);
+          })
+        },
+      ])
+        
 
+    }
+    useEffect(() => {
+        refreshPage();
+        }, []);
+        //pour refresh la page 
+ 
     return (
         <View style={styles.contener}>
             <View>
             
             <View style={styles.container}>
                 <View style={styles.row}>
-                <Text style={[styles.cell, { backgroundColor:"#fff", textAlign:'center', fontWeight:"bold",color: "#fff"}]}></Text>
+                <Dropdown
+                  style={[styles.dropdown, styles.cell]}
+                  placeholderStyle = {styles.placeholder}
+                  selectedTextStyle = {styles.inputSearch}
+                  iconStyle= {styles.iconStyle}
+                  data={data}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={
+                    valeur != null? valeur:
+                   "Trier par"
+                  }
+                  search
+                  value={valeur}
+                  onChange={handleChange}
+                  
+                />
+                
                     <Text style={[styles.cell, {backgroundColor:"#F7DC6F", textAlign:'center', fontWeight:"bold",}]}>Categorie</Text>
                     <Text style={[styles.cell, {backgroundColor:"#F8C471", textAlign:'center', fontWeight:"bold"}]}>Montant</Text>
-                    <Text style={[styles.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Date</Text>
+                    
                     
                 </View>
             </View>
             <ScrollView>
-                {expenses.map(expense => (
+                {expenses.map((expense, index) => (
                     
                 <View key ={expense.id} style={styles.row}>
+
                     <TouchableOpacity 
                     style={[ styles.cell, {textAlign:"center", backgroundColor:"#ABB2B9", }]}
                     onPress={() => 
                       displayExpense(expense.id)
                     }>
                     <View>
-                    <Text style={{color: "white"}}>{expense.id}</Text>
+                    <Text style={{color: "white"}}>{index + 1}</Text>
                     </View>
                     </TouchableOpacity>
-                    <Text style={[styles.cell, {backgroundColor:"#F7DC6F", textAlign: "center"}]}>{expense.categorie}</Text>
+                    
+                    <Text key={expense.id} style={[styles.cell, {backgroundColor:"#F7DC6F", textAlign: "center"}]}>
+          
+                 {
+                  expense.id_categorie
+                 },
+                 {
+                  expense.id_categorie == 8? "Aliment": "bobon" 
+                 }   
+                    
+                    </Text>
                     <Text style={[styles.cell, {textAlign: "center", backgroundColor:"#F8C471"}]}>{expense.montant} F</Text>
-                    <Text  style={[styles.cell, {backgroundColor: "#F0B27A", textAlign: "center"}]}>{expense.date}</Text>
+                   
                 </View>   
             ))}
         
@@ -102,59 +260,95 @@ export default function SpendingHistory({navigation}) {
         
             </View>
             <View 
+              style={{width: screenWidth * 1,}}
             >
 
               <Modal visible={isModalVisible}
                 animationType="slide"
                 onRequestClose={closeModal}
-              
               >
                  <View 
                    style={{
                     flex:1,
                     alignItems: "center",
-                    justifyContent:"center",
-                    padding: 10
+                    justifyContent:"justify",
+                    padding: 10,
                   }}
             >
+              <View 
+                style={{backgroundColor: '#fff', height: 100,
+                flexDirection:'row',
+                width: screenWidth * 1,alignItems:"center", 
+                justifyContent:"space-between", paddingTop: 60,}}
+              >
+                <TouchableOpacity onPress={closeModal}
+                style={{backgroundColor:'#F1948A', width: screenWidth * 0.272, padding:5, marginBottom: 8,}}>
+                <Text style={{ textAlign: "center", }}> Cancel</Text>
+              </TouchableOpacity>
+              
+                    
+            </View>
 
+            <ScrollView>
+              <Text style={{marginTop: 30}}>Categorie</Text>
               <TextInput
               style={styles.input}
               value={exp.categorie}
+              onChangeText={handleCategorie}
               editable={inputVisible}
               />
+              <Text >Montant</Text>
                <TextInput
               style={styles.input}
-              keyboardType="numeric"
+              onChangeText={handleMontant}
               value={exp.montant+""}
               editable={inputVisible}
               />
-
-              
-              
+              <Text >Date</Text>
               <TextInput
-              style={styles.input}
+              style={[styles.input, {backgroundColor:"#f5f5F5"}]}
               value={exp.date}
-              editable={inputVisible}/>
-
+              editable={false}/>
+              <Text >Commentaire</Text>
               <TextInput
-              style={styles.input}
+              style={[styles.input, {marginBottom: 20, height: 80}]}
               value={exp.commentaire}
+              onChangeText={handleComment}
+              multiline={true}
+              numberOfLines={3}
               editable={inputVisible}/>
 
-              <Button title="Edit" 
-               onPress={editInput}/>
+              <View 
+                style={{flexDirection: "row", marginBottom: 15}}
+              >
+                <TouchableOpacity onPress={editInput}
+                style={{backgroundColor:'#48C9B0', width: screenWidth * 0.374, padding:10, borderRadius: 10}}>
+                <Text style={{color:"white", textAlign: "center"}}>Edit</Text>
+              </TouchableOpacity>
 
-              <TouchableOpacity onPress={closeModal}
-                style={{backgroundColor:'#F1948A', width: screenWidth * 0.272, padding:5, marginBottom: 8}}>
-                <Text style={{color:"white", textAlign: "center"}}>Close</Text>
+              <TouchableOpacity onPress={deleteExp}
+                style={{backgroundColor:'#F1948A', width: screenWidth * 0.373, padding:10, marginLeft:15, borderRadius: 10 }}>
+                <Text style={{color:"white", textAlign: "center"}}>Delete</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity onPress={() => console.log("updating.....") }
-                style={{backgroundColor:'#48C9B0', width: screenWidth * 0.272, padding:5}}>
-                <Text style={{color:"white", textAlign: "center"}}>Update</Text>
-              </TouchableOpacity>
+
+              </View>
+
+              {
+                inputVisible == false ? null : (
+                  <TouchableOpacity onPress={handleUpdate }
+                  style={{backgroundColor:'#48C9B0', width: screenWidth * 0.78, padding:10, borderRadius: 10}}>
+                  <Text style={{color:"white", textAlign: "center"}}>Update</Text>
+                </TouchableOpacity>
+                )
+              }
+              </ScrollView>
                </View>
+
+               <View 
+                style={{backgroundColor: 'orange', height: 50, width: screenWidth * 1,alignItems:"center", justifyContent:"center"}}
+              >
+                    <Text >Text goes here</Text>
+            </View>
               </Modal>
             </View>
              
@@ -197,7 +391,28 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: "orange",
         padding: 10,
-        borderRadius: 5
+        borderRadius: 5,
+        marginBottom: 10,
+      },
+      dropdown: {
+        height: 38,
+        borderBottomColor: 'grey',
+        borderBottomWidth: 0.5,
+      },
+      placeholder: {
+        fontSize : 10,
+      },
+      selectedTextStyle: {
+        fontSize: 16,
+      },
+      iconStyle:{
+        width: screenWidth * 0.1,
+        height: 30,
+      },
+      inputSearch:{
+        height: 100,
+        width: 30,
+        fontSize: 10,
       },
 
 }

@@ -10,12 +10,13 @@ import { StyleSheet, Text,
     } from 'react-native';
     
     import Ionicons from "@expo/vector-icons/Ionicons";
-    import { useState } from 'react';
+    import { useEffect, useState } from 'react';
 
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
 import { createExpense } from '../utils/database';
-
+import { getCategories } from '../utils/database';
+import { initCategories } from '../utils/categories_seed';
 
 
 
@@ -25,14 +26,26 @@ import { createExpense } from '../utils/database';
     const screenWidth = Dimensions.get('window').width;
 
 export function AddExpense({navigation}) {
-    const [selectedValue, setSelectedValue] = useState("Vestimentaire");
+    const [selectedValue, setSelectedValue] = useState(7);
     const [montant, setMontant] = useState("")
     const [verifMontant, setVerifMontant] = useState(false)
     const [comment, setComment] = useState("")
     const [verifComment, setVerifComment] = useState(false)
     const currentDate = new Date();
     const formatDate = currentDate.toLocaleDateString();
+    const [elementPicker, setElementPicker] = useState([])
 
+    const fetchCategories = async () => {
+      try{
+       
+        let cats = await getCategories();
+        console.log(cats);
+        setElementPicker(cats)
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
 
     function handleMontant(e) {
         const montantVar = e.nativeEvent.text;
@@ -73,6 +86,9 @@ export function AddExpense({navigation}) {
         }
         else Alert.alert("Veuiller Entrer\nun montant")
       }
+      useEffect(() => {
+        fetchCategories()
+      }, []);
       
     return(
         <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={100}
@@ -94,14 +110,15 @@ export function AddExpense({navigation}) {
                 onValueChange={(itemValue, itemIndex) =>
                 setSelectedValue(itemValue)  
             }
+              
                 style={styles.picker}
             >
-                <Picker.Item label="Alimentation" value="Alimentation" />
-                <Picker.Item label="Transport" value="Transport" />
-                <Picker.Item label="Vestimentaire" value="Vestimentaire" />
-                <Picker.Item label="Education" value="Education" />
-                <Picker.Item label="Divertissement" value="Divertissement" />
-                <Picker.Item label="Impot" value="Impot" />
+              {
+                elementPicker.map(cat => (
+                  <Picker.Item key={cat.id} label={cat.nom} value={cat.id} />
+                )) 
+              }
+                
             </Picker>
             <Text text30>Selected : {selectedValue}</Text>
             {

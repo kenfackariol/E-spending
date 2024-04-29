@@ -1,4 +1,4 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { DashBoard } from '../Screen/DashBoard';
@@ -9,9 +9,14 @@ import { Home } from '../Screen/Home';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { initDB, resetDB } from '../utils/database';
 import AuthStack from './AuthStack';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AddExpense } from '../Screen/AddExpense';
+import { View, SafeAreaView } from 'react-native';
+import DrawerHeader from "../Screen/DrawerHeader";
+import { initCategories } from '../utils/categories_seed';
+import { getCategories } from '../utils/database';
 
+//import { dropTable } from '../utils/database';
 
 const Drawer = createDrawerNavigator();
 
@@ -24,11 +29,18 @@ const initializeDB = async () => {
     // init DB
     let res = await initDB();
     console.log(res);
+
+    //init categories
+    //let int = await initCategories();
+    //console.log(int);
+    let cats = await getCategories();
+    console.log(cats);
   }
   catch(error){
     console.log(error);
   }
 }
+
 
 const AppDrawer = () => {
   useEffect(() => {
@@ -39,6 +51,15 @@ const AppDrawer = () => {
     <NavigationContainer>
       <StatusBar style='auto' backgroundColor='#fff' />
       <Drawer.Navigator
+        drawerContent={(props) => {
+          return (
+            <SafeAreaView>
+              <DrawerHeader/>
+              <DrawerItemList {...props}/>
+            </SafeAreaView>
+          )
+          
+        } }
         initialRouteName='Dashboard'
         screenOptions={{
           drawerStyle: {
@@ -48,11 +69,11 @@ const AppDrawer = () => {
           headerStyle: {
             backgroundColor: "#fff"
           },
-          headerTintColor: "black",
+          headerTintColor: "#154360",
           headerTitleStyle: {
             fontWeight: '900'
           },
-          drawerActiveTintColor: "blue",
+          drawerActiveTintColor: "#154360",
           drawerLabelStyle: {
             color: '#111'
           }

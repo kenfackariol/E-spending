@@ -1,0 +1,25 @@
+
+    [
+        {
+            "name": "Alimentaire"
+        },
+        {
+            "name": "Vestimentaire"
+        },
+        {
+            "name": "Loisir"
+        },
+        {
+            "name": "Transport"
+        },
+        {
+            "name": "Impot"
+        },
+        {
+            "name": "Sante"
+        },
+        {"name": "Education"},
+        {"name": "Epargne"},
+        {"name": "Service public"} ,
+        {"name": "Divers"}
+    ]
