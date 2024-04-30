@@ -29,7 +29,7 @@ export default function SpendingHistory({ navigation }) {
   const [inputVisible, setInputVisible] = useState(false)
   const [categories, setCategories] = useState([])
   const [numSort, setNumSort] = useState();
-  const [tab, setTab] = useState([]);
+  
   
 
 
@@ -47,6 +47,7 @@ export default function SpendingHistory({ navigation }) {
   function closeModal() {
     
       setIsModalVisible(false)
+      setInputVisible(false)
     
   }
 
@@ -56,6 +57,7 @@ export default function SpendingHistory({ navigation }) {
 
     getExpenseByCatId(id)
       .then(expenses => {
+        setExpenses(expenses)
         console.log(expenses)
       })
       .catch(error => {
@@ -139,7 +141,9 @@ export default function SpendingHistory({ navigation }) {
         {
           text: "Oui",
           onPress: () => updateExpense(exp.id, exp.id_utilisateur, exp.id_categorie, exp.montant, exp.date, exp.commentaire)
+          
             .then(expUpt => {
+              console.log(exp.id, exp.id_utilisateur, exp.montant, exp.commentaire, exp.categorie)
               refreshPage();
               console.log(expUpt)
               Alert.alert(`Depense\nmodifiée`);

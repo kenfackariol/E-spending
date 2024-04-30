@@ -7,6 +7,7 @@ import { SignUp } from '../Screen/SignUp';
 import { Home } from '../Screen/Home';
 import { DashBoard } from '../Screen/DashBoard';
 import { AddExpense } from '../Screen/AddExpense';
+import AppDrawer from './AppDrawer';
 
 const Stack = createStackNavigator();
 
@@ -17,8 +18,17 @@ const AuthStack = () => {
       <Stack.Screen name='SignIn' component={SignIn} />
       <Stack.Screen name='ForgotPassword' component={ForgotPass} />
       <Stack.Screen name='SignUp' component={SignUp} />
-      <Stack.Screen name='Home' component={Home} />
-      <Stack.Screen name='addExp' component={AddExpense} />
+      <Stack.Screen
+      name='Home' 
+      component={Home} 
+      options={{headerShown: false}}/>
+      
+      <Stack.Screen name='drawer'
+        component={AppDrawer} 
+        options={{headerShown: false,
+        headerLeft: () => null}
+      }
+      />
       
     </Stack.Navigator>
     

@@ -299,7 +299,7 @@ export const getExpense = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Depense.id, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id WHERE Depense.id = ?',
+        'SELECT Depense.id, Depense.id_utilisateur, Depense.id_categorie, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id WHERE Depense.id = ?',
         [id],
         (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
         (_, error) => reject(error)
@@ -312,9 +312,9 @@ export const getExpenseByCatId = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Depense WHERE id_categorie = ?',
+        'SELECT Depense.id, Depense.id_utilisateur, Depense.id_categorie, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id WHERE Depense.id_categorie = ?',
         [id],
-        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, { rows }) => resolve(rows._array),
         (_, error) => reject(error)
       );
     });
@@ -322,8 +322,10 @@ export const getExpenseByCatId = (id) => {
 }
 
 export const updateExpense = (id, id_utilisateur, id_categorie, montant, date, commentaire) => {
+  console.log(id, id_utilisateur, id_categorie, montant, date, commentaire)
   return new Promise((resolve, reject) => {
-    db.transaction(tx => {
+    null
+   db.transaction(tx => {
       tx.executeSql(
         'UPDATE Depense SET id_utilisateur = ?, id_categorie = ?, montant = ?, date = ?, commentaire = ? WHERE id = ?',
         [id_utilisateur, id_categorie, montant, date, commentaire, id],

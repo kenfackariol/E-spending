@@ -52,7 +52,7 @@ export function SignIn({ navigation }) {
   };
   
   const goToDash = () => {
-    navigation.navigate('Home');
+    navigation.navigate('drawer');
   }
   
   const handleSubmit = () => {
