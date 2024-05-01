@@ -240,6 +240,8 @@ export const getCategories = () => {
   });
 };
 
+
+
 export const getCategory = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -287,6 +289,19 @@ export const getExpenses = () => {
     db.transaction(tx => {
       tx.executeSql(
         'SELECT Depense.id, Depense.montant, Depense.date, Depense.commentaire, Categorie.nom FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id',
+        [],
+        (_, { rows }) => resolve(rows._array),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getFirstExpenses = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT id,date, montant FROM Depense LIMIT 5',
         [],
         (_, { rows }) => resolve(rows._array),
         (_, error) => reject(error)

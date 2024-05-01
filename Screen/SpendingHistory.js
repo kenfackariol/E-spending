@@ -8,13 +8,14 @@ import {
   Dimensions,
   Button
 } from 'react-native';
-import { getExpenses, getExpense, getExpenseByCatId, getCategories,  } from "../utils/database";
+import { getExpenses, getExpense, getExpenseByCatId, getCategories, } from "../utils/database";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";
 import { updateExpense } from "../utils/database";
 import { deleteExpense } from "../utils/database";
 import { Dropdown } from 'react-native-element-dropdown';
+import { FAB } from 'react-native-paper';
 
 
 
@@ -28,27 +29,28 @@ export default function SpendingHistory({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [inputVisible, setInputVisible] = useState(false)
   const [categories, setCategories] = useState([])
-  const [numSort, setNumSort] = useState();
-  
-  
-
-
-
-
   const [valeur, setValeur] = useState(null);
+  
+
+
+
+
+
+
+  
   const handleChange = (value) => {
     setValeur(value.label)
-    setNumSort(value.value)
+    
     sortCategorie(value.value)
   }
 
 
 
   function closeModal() {
-    
-      setIsModalVisible(false)
-      setInputVisible(false)
-    
+
+    setIsModalVisible(false)
+    setInputVisible(false)
+
   }
 
 
@@ -58,7 +60,7 @@ export default function SpendingHistory({ navigation }) {
     getExpenseByCatId(id)
       .then(expenses => {
         setExpenses(expenses)
-        console.log(expenses)
+        
       })
       .catch(error => {
         console.error(error);
@@ -69,6 +71,7 @@ export default function SpendingHistory({ navigation }) {
 
     getExpenses()
       .then(expenses => {
+        setValeur(null)
         setExpenses(expenses)
       })
       .catch(error => {
@@ -79,7 +82,7 @@ export default function SpendingHistory({ navigation }) {
     getCategories()
       .then(cats => {
         setCategories(cats)
-        console.log(cats)
+        
       })
       .catch(error => {
         console.error(error);
@@ -133,7 +136,7 @@ export default function SpendingHistory({ navigation }) {
   function handleUpdate() {
     console.log(exp);
     if (/^\d+(\.\d{1,2})?$/.test(exp.montant) && exp.montant > 0) {
-      Alert.alert("Valider la modification?", "", [
+      Alert.alert("modification", "Est-vous-sûr?", [
         {
           text: 'Non',
           onPress: () => null
@@ -141,7 +144,7 @@ export default function SpendingHistory({ navigation }) {
         {
           text: "Oui",
           onPress: () => updateExpense(exp.id, exp.id_utilisateur, exp.id_categorie, exp.montant, exp.date, exp.commentaire)
-          
+
             .then(expUpt => {
               console.log(exp.id, exp.id_utilisateur, exp.montant, exp.commentaire, exp.categorie)
               refreshPage();
@@ -159,7 +162,7 @@ export default function SpendingHistory({ navigation }) {
 
   //methode pour la suppression
   function deleteExp() {
-    Alert.alert("Voulez-vous vraiment\supprimer?", "", [
+    Alert.alert("suppression", "Est-vous sûr?", [
       {
         text: 'Non',
         onPress: () => null
@@ -169,7 +172,7 @@ export default function SpendingHistory({ navigation }) {
         onPress: () => deleteExpense(exp.id)
           .then(expDel => {
             refreshPage();
-            Alert.alert(`Depense\nSupprimée`);
+            Alert.alert(`Supprimé !`);
             refreshPage()
             setIsModalVisible(false)
           })
@@ -183,7 +186,7 @@ export default function SpendingHistory({ navigation }) {
   }
   useEffect(() => {
     refreshPage();
-    console.log(expenses)
+   
   }, []);
 
   /*  useEffect(() => {
@@ -249,22 +252,33 @@ export default function SpendingHistory({ navigation }) {
             </View>
           ))}
 
+
         </ScrollView>
-        <TouchableOpacity
-          style={{ backgroundColor: "#F8C471", padding: 20, marginBottom: 10, marginTop: 5, width: screenWidth * 1, borderRadius: 10, flexDirection: 'row', justifyContent: "center" }}
-          onPress={() => navigation.navigate('addExp')}>
 
-          <Text text30 style={{ fontStyle: "italic", fontWeight: "bold", fontSize: 17 }}>Add Expense</Text>
+        <FAB
+          icon={({ size, color }) => (
+            <Ionicons name="reload" size={size} color={color} />
+          )}
+          onPress={refreshPage}
+          style={[styles.fab, {bottom: 110, backgroundColor:"#F2F3F4"}]}
+        />
 
-        </TouchableOpacity>
+        <FAB
+          icon="plus"
+          onPress={() => navigation.navigate('addExp')}
+          style={styles.fab}
+        />
+
 
       </View>
+
       <View
         style={{ width: screenWidth * 1, }}
       >
 
         <Modal visible={isModalVisible}
           animationType="slide"
+          presentationStyle="pageSheet"
           onRequestClose={closeModal}
         >
           <View
@@ -277,43 +291,47 @@ export default function SpendingHistory({ navigation }) {
           >
             <View
               style={{
-                backgroundColor: '#fff', height: 100,
+                backgroundColor: '#fff',
                 flexDirection: 'row',
                 width: screenWidth * 1, alignItems: "center",
-                justifyContent: "space-between", paddingTop: 60,
+                justifyContent: "space-between",
               }}
             >
-              <TouchableOpacity onPress={closeModal}
-                style={{ backgroundColor: '#F1948A', width: screenWidth * 0.272, padding: 5, marginBottom: 8, }}>
-                <Text style={{ textAlign: "center", }}> Cancel</Text>
-              </TouchableOpacity>
+
+              <Button title="Cancel" onPress={closeModal} />
+
+              <Button title="Edit" onPress={editInput} color={inputVisible ? "white" : ""} />
+
 
 
             </View>
 
             <ScrollView>
+              <Text style={{ textAlign: "center" }}>From {exp.date}</Text>
               <Text style={{ marginTop: 30 }}>Categorie</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: "#f5f5F5" }]}
                 value={exp.nom}
                 onChangeText={handleCategorie}
                 editable={false}
               />
               <Text >Montant</Text>
               <TextInput
-                style={styles.input}
+                style={
+                  inputVisible ? [styles.input] : [styles.input, { backgroundColor: "#f5f5F5", }]
+                }
                 onChangeText={handleMontant}
                 value={exp.montant + ""}
                 editable={inputVisible}
+
               />
-              <Text >Date</Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: "#f5f5F5" }]}
-                value={exp.date}
-                editable={false} />
+
               <Text >Commentaire</Text>
               <TextInput
-                style={[styles.input, { marginBottom: 20, height: 80 }]}
+                style={
+                  inputVisible ? [styles.input, { marginBottom: 20, height: 80, }] :
+                    [styles.input, { backgroundColor: "#f5f5F5", marginBottom: 20, height: 80 }]
+                }
                 value={exp.commentaire}
                 onChangeText={handleComment}
                 multiline={true}
@@ -323,33 +341,32 @@ export default function SpendingHistory({ navigation }) {
               <View
                 style={{ flexDirection: "row", marginBottom: 15 }}
               >
-                <TouchableOpacity onPress={editInput}
-                  style={{ backgroundColor: '#48C9B0', width: screenWidth * 0.374, padding: 10, borderRadius: 10 }}>
-                  <Text style={{ color: "white", textAlign: "center" }}>Edit</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={deleteExp}
-                  style={{ backgroundColor: '#F1948A', width: screenWidth * 0.373, padding: 10, marginLeft: 15, borderRadius: 10 }}>
-                  <Text style={{ color: "white", textAlign: "center" }}>Delete</Text>
-                </TouchableOpacity>
-
               </View>
 
               {
                 inputVisible == false ? null : (
                   <TouchableOpacity onPress={handleUpdate}
                     style={{ backgroundColor: '#48C9B0', width: screenWidth * 0.78, padding: 10, borderRadius: 10 }}>
-                    <Text style={{ color: "white", textAlign: "center" }}>Update</Text>
+                    <Text style={{ textAlign: "center" }}>Update</Text>
                   </TouchableOpacity>
                 )
               }
             </ScrollView>
+
           </View>
 
           <View
-            style={{ backgroundColor: 'orange', height: 50, width: screenWidth * 1, alignItems: "center", justifyContent: "center" }}
+            style={{ backgroundColor: '#AEB6BF', height: 50, width: screenWidth * 1, alignItems: "center", justifyContent: "center" }}
           >
-            <Text >Text goes here</Text>
+            
+            <FAB
+              icon={({ size, color }) => (
+                <Ionicons name="close" size={size} color={color} />
+              )}
+              onPress={deleteExp}
+              style={[styles.fab, { backgroundColor: "red" }]}
+            />
+            <Text>@e.spending.cm</Text>
           </View>
         </Modal>
       </View>
@@ -361,7 +378,7 @@ const styles = StyleSheet.create({
   contener: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "justify",
 
 
   },
@@ -374,18 +391,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between",
     borderBottomWidth: 1,
-
-
   },
   cell: {
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-  },
-  cellone: {
-    flex: 0,
-    alignItems: "center",
-    paddingVertical: 5,
   },
   input: {
     width: screenWidth * 0.785,
@@ -395,6 +405,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+
   },
   dropdown: {
     height: 38,
@@ -418,6 +429,13 @@ const styles = StyleSheet.create({
     height: 100,
     width: 30,
     fontSize: 10,
+  },
+  fab: {
+    backgroundColor: '#2ECC71',
+    marginLeft: screenWidth * 0.8,
+    position: 'absolute',
+    bottom: 30,
+    right: 16,
   },
 
 }

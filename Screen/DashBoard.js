@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { StyleSheet, Text, 
     View,Alert, 
     TextInput, Pressable,
@@ -10,29 +10,49 @@ import { StyleSheet, Text,
     Modal, 
     } from 'react-native';
     import Ionicons from "@expo/vector-icons/Ionicons";
-    import {getExpense} from '../utils/database';
+    import {getFirstExpenses} from '../utils/database';
     import { LineChart } from 'react-native-chart-kit';
+import { date } from "yup";
 
 
     const screenWidth = Dimensions.get('window').width;
     
 export function DashBoard({navigation}){
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [dates, setDates]= useState([])
+    const [montants, setMontants] = useState([])
+    const [donnees, setDonnes] = useState([])
+    
 
     const data = {
-        labels: ["Lun", "Mar", "Mer", "jeudi", "ven", "sam", "dim"],
+        labels: ["Lun", "Mar", "Mer", "jeudi", "ven", "sam"],
         datasets : [
           {
-            data : [500, 300, 1000, 500, 1000, 1500, 1400]
+            data : [500, 300, 1000, 1500, 1400, 2500]
           }
          ]
   
       }
+
+      function refreshPage(){
+        getFirstExpenses()
+            .then(expenses =>{
+                console.log(expenses);
+                setDonnes(expenses)
+            })
+            .catch((error)=>{
+                console.error(error)
+            })
+      }
+      useEffect(()=>{
+            refreshPage()
+            
+      }, [])
     return(
         <View style={Mystyle.contener}>
         
 
-        <View style={{ alignItems: "center" }}>
+        <View style={{ justifyContent: "center" }}>
             <LineChart
             data={data}
             width={screenWidth * 1}

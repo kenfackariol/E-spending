@@ -45,7 +45,7 @@ export function SignIn({ navigation }) {
   const validateForm = () => {
 
     let errors = {}
-    if (!username) errors.username = "Email is required"
+    if (!username) errors.username = "User name is required"
     if (!password) errors.password = "Password is required"
     setErrors(errors)
     return Object.keys(errors).length === 0;

@@ -23,12 +23,7 @@ const AuthStack = () => {
       component={Home} 
       options={{headerShown: false}}/>
       
-      <Stack.Screen name='drawer'
-        component={AppDrawer} 
-        options={{headerShown: false,
-        headerLeft: () => null}
-      }
-      />
+      
       
     </Stack.Navigator>
     
@@ -37,3 +32,10 @@ const AuthStack = () => {
 };
 
 export default AuthStack;
+
+/*{ <Stack.Screen name='drawer'
+        component={AppDrawer} 
+        options={{headerShown: false,
+        headerLeft: () => null}
+      }
+      /> }*/
