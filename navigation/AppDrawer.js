@@ -12,6 +12,7 @@ import { initDB, resetDB } from '../utils/database';
 import AuthStack from './AuthStack';
 import { useEffect, useState } from 'react';
 import { AddExpense } from '../Screen/AddExpense';
+import { AddBudget } from '../Screen/AddBudget';
 import { View, SafeAreaView } from 'react-native';
 import DrawerHeader from "../Screen/DrawerHeader";
 import { initCategories } from '../utils/categories_seed';
@@ -157,6 +158,8 @@ const AppDrawer = () => {
           )
         }}
         component={Budget} />
+
+
 
 
 

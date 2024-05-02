@@ -31,9 +31,7 @@ export function DashBoard({navigation}){
             data : [500, 300, 1000, 1500, 1400, 2500]
           }
          ]
-  
       }
-
       function refreshPage(){
         getFirstExpenses()
             .then(expenses =>{
@@ -50,14 +48,11 @@ export function DashBoard({navigation}){
       }, [])
     return(
         <View style={Mystyle.contener}>
-        
-
         <View style={{ justifyContent: "center" }}>
             <LineChart
             data={data}
             width={screenWidth * 1}
             height={300}
-            
             chartConfig={{
               backgroundColor: "#e26a00",
               backgroundGradientFrom : "#28B463",
@@ -78,9 +73,7 @@ export function DashBoard({navigation}){
                     <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Sam</Text>
                     <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Dim</Text>
                 </View>
-            </View>
-
-             
+            </View>             
                 <View  style={Mystyle.row}>
                     <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#F7DC6F"}]}>1000 F</Text>
                     <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign: "center"}]}>2550 F</Text>
@@ -107,10 +100,8 @@ const Mystyle = StyleSheet.create({
         flex:1,
         alignItems:"center",
         justifyContent: "justify",
-        
     }, 
     press:{
-        
         borderRadius:2,
         backgroundColor:'#fa0000',
         width: screenWidth * 0.9,

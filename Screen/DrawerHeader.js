@@ -24,7 +24,7 @@ const DrawerHeader = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity >
+      <TouchableOpacity onPress={userGet}>
       <View
         source={require('../assets/19199299.jpg')}
         style={styles.arealetter}
