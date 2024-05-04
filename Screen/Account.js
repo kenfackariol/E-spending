@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getUser, updateUser } from "../utils/database";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { FAB } from 'react-native-paper';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -124,6 +125,15 @@ export function Account() {
     return (
 
         <View style={styles.contener}>
+              <FAB
+        icon={({ size, color }) => (
+            <Ionicons name="log-out-sharp" size={size} color={color} />
+          )}
+        onPress={() =>
+          setModalVisible(true)
+        }
+        style={styles.fabLogOut}
+      />
             <View
                 style={styles.arealetter}
             >
@@ -230,16 +240,18 @@ export function Account() {
                             </View>
                         )
                     }
+                
 
-
-                    <View>
-                        <TouchableOpacity
-                            style={{ backgroundColor: '#F1948A', width: screenWidth * 0.373, padding: 10, marginLeft: 15, borderRadius: 10 }}>
-                            <Text style={{ color: "white", textAlign: "center" }}>Delete</Text>
-                        </TouchableOpacity>
-                    </View>
+                   
                 </ScrollView>
+                
             </KeyboardAvoidingView>
+          
+       <TouchableOpacity onPress={() => console.log('pressed')}
+        style={[styles.fab, {}]}
+       >  
+                    <Text text30>Delete Account</Text> 
+                    </TouchableOpacity>
 
         </View>
         
@@ -277,5 +289,20 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "baseline",
       },
+      fab: {
+        backgroundColor: '#CF5151',
+        position: 'absolute',
+        bottom: 30,
+        right: 0,
+         padding: 10,
+          borderWidth: 4,
+           borderColor: "red"
+      },
+      fabLogOut: {
+        backgroundColor: '#D45151',
+        position: 'absolute',
+       right: 1,
+        top: 0,
+      }
 }
 )

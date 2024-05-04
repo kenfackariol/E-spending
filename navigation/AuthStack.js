@@ -22,6 +22,10 @@ const AuthStack = () => {
       name='Home' 
       component={Home} 
       options={{headerShown: false}}/>
+      <Stack.Screen
+      name='drawer' 
+      component={AppDrawer} 
+      options={{headerShown: false}}/>
       
       
       

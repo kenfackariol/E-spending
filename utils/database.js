@@ -9,7 +9,7 @@ export function dropTable() {
 
     db.transaction(tx => {
     
-      tx.executeSql('DROP TABLE Depense');
+      tx.executeSql('DROP TABLE Budget');
       
     }, (error) => {
       reject(`Error drop database: ${error}`);
@@ -25,7 +25,7 @@ export function initDB() {
       tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, numero INTEGER, mot_de_passe TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Categorie (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, date VARCHAR(10), commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant REAL, periode TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant INTEGER, periode TEXT, createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Objectif (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, montant_cible REAL, date_limite TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense_Obj (id INTEGER PRIMARY KEY AUTOINCREMENT, id_depense INTEGER, id_objectif INTEGER, FOREIGN KEY (id_depense) REFERENCES Depense(id), FOREIGN KEY (id_objectif) REFERENCES Objectif(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Notification (id_message INTEGER PRIMARY KEY AUTOINCREMENT,dateN TEXT, notifs TEXT);');
@@ -423,7 +423,7 @@ export const getBudgets = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Budget',
+        'SELECT Budget.id, Budget.id_categorie, Budget.createdAt, Budget.montant, Budget.periode, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id',
         [],
         (_, { rows }) => resolve(rows._array),
         (_, error) => reject(error)
@@ -436,7 +436,7 @@ export const getBudget = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM Budget WHERE id = ?',
+        'SELECT Budget.id, Budget.id_categorie, Budget.createdAt, Budget.montant, Budget.periode, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id WHERE Budget.id = ?',
         [id],
         (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
         (_, error) => reject(error)

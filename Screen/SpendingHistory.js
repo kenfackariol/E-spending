@@ -31,13 +31,6 @@ export default function SpendingHistory({ navigation }) {
   const [categories, setCategories] = useState([])
   const [valeur, setValeur] = useState(null);
   
-
-
-
-
-
-
-  
   const handleChange = (value) => {
     setValeur(value.label)
     
@@ -136,7 +129,7 @@ export default function SpendingHistory({ navigation }) {
   function handleUpdate() {
     console.log(exp);
     if (/^\d+(\.\d{1,2})?$/.test(exp.montant) && exp.montant > 0) {
-      Alert.alert("modification", "Est-vous-sûr?", [
+      Alert.alert("modification", "Êtes-vous-sûr?", [
         {
           text: 'Non',
           onPress: () => null
@@ -306,7 +299,7 @@ export default function SpendingHistory({ navigation }) {
 
             </View>
 
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={{ textAlign: "center" }}>From {exp.date}</Text>
               <Text style={{ marginTop: 30 }}>Categorie</Text>
               <TextInput
@@ -361,7 +354,7 @@ export default function SpendingHistory({ navigation }) {
             
             <FAB
               icon={({ size, color }) => (
-                <Ionicons name="close" size={size} color={color} />
+                <Ionicons name="trash-bin-sharp" size={size} color={color} />
               )}
               onPress={deleteExp}
               style={[styles.fab, { backgroundColor: "red" }]}

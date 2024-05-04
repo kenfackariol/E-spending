@@ -8,13 +8,15 @@ import {
   Modal,
   TouchableOpacity, Dimensions
 } from 'react-native';
-import { getBudgets, getBudget, deleteBudget, updateBudget } from "../utils/database";
+import { getBudgets, getBudget, deleteBudget, updateBudget, createBudget } from "../utils/database";
 import { ScrollView } from "react-native-gesture-handler";
 import { FAB } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { getCategories } from "../utils/database";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from 'react-native-dropdown-picker';
+import moment from 'moment';
+import { text } from '@fortawesome/fontawesome-svg-core';
 
 const screenWidth = Dimensions.get('window').width;
 export function Budget() {
@@ -22,27 +24,171 @@ export function Budget() {
   const [budgets, setBudgets] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [elementPicker, setElementPicker] = useState([])
-  const [montant, setMontant] = useState("")
-  const [selected, setSelected] = useState(null);
+  const [montant, setMontant] = useState("");
+  const [periode, setPeriode] = useState("");
+  const currentDate = new Date();
+  const formatDate = currentDate.toLocaleDateString();
+  const [bud, setBud] = useState([])
+  const [displayPick, setDisplayPick] = useState(true)
+  const budAlready = []
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [idperiode, setidperiode] = useState(null);
   const [items, setItems] = useState([
-    { label: 'Jour', value: 1 },
-    { label: 'Semaine', value: 2 },
-    { label: "Mois", value: 3 },
+    { label: 'Day', value: 1 },
+    { label: 'Week', value: 2 },
+    { label: "Month", value: 3 },
   ]);
   const fetchCategories = async () => {
     try {
-
       let cats = await getCategories();
       console.log(cats);
       setElementPicker(cats)
+
     }
     catch (error) {
       console.log(error);
     }
   }
+  //fonction pour les modicfications
+  function handleMontant(e) {
+    //const catVar = e.nativeEvent.text;
+    //exp.categorie = catVar
+    //destitution de l'objet exp de la depense
+    if(/^\d+(\.\d{1,2})?$/.test(e))
+      {
+        const newobj = { ...budget }
+        newobj.commentaire = e
+        setBudget(newobj)
+        return true
+      }
+      else return false
+  }
+
+  function handlePeriode(e) {
+    //const catVar = e.nativeEvent.text;
+    //exp.categorie = catVar
+    //destitution de l'objet exp de la depense
+    if(compareDates(e)){
+      const newobj = { ...budget }
+    newobj.periode = e
+    setBudget(newobj)
+    return true
+    }
+    else return false
+    
+  }
+
+  //methode pour update 
+  function handleUpdate(){
+
+  }
+
+ 
+  
+  function compareDates(dateString) {
+    // Convertir la saisie en objet Date
+    const dateInput = new Date(dateString);
+  
+    // Obtenir la date d'aujourd'hui
+    const today = new Date();
+  
+    // Comparer les dates
+    if (dateInput < today) {
+      return false;
+    }  else {
+      return true;
+    }
+  }
+  function getbudgetbyid(id){
+    setDisplayPick(false)
+    setModalVisible(true)
+    getBudget(id)
+      .then((bud) => {
+        console.log(bud)
+        setBud(bud)
+      } )
+      .catch ((error) => {
+        console.error(error)
+      })
+  }
+
+  //methode pour supprimer
+  function deleteBud() {
+    Alert.alert("suppression", "Est-vous sûr?", [
+      {
+        text: 'Non',
+        onPress: () => null
+      },
+      {
+        text: "Oui",
+        onPress: () => deleteBudget(bud.id)
+          .then(expDel => {
+            Alert.alert(`Budget Supprimé!`);
+            refreshPage()
+            setModalVisible(false)
+          })
+          .catch(error => {
+            console.error(error);
+          })
+      },
+    ])
+  }
+//methode pour modifier un budget
+  function handleUpdate(){
+    if (handleMontant && handlePeriode){
+      let user = 1
+      updateBudget(bud.id, user, bud.id_categorie, bud.montant, bud.periode)
+        .then((upt)=> {
+          console.log(`budget modifier: ${upt}`)
+        })
+        .catch((err)=>{
+          console.error(err)
+        })
+    }
+  }
+
+
+  function handleSubmit() {
+    const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+
+    console.log(periode);
+
+    let user = 1
+    if (/^\d+(\.\d{1,2})?$/.test(montant) && regex.test(periode) ) {
+      if (compareDates(periode)) {
+        createBudget(user, selectedValue, montant, periode)
+        .then(insertId => {
+          // L'insertion de l'utilisateur a réussi
+          console.log('Budget Inserer :', insertId);
+          refreshPage()
+
+          Alert.alert("Successfull", "New Budget?", [
+            {
+              text: 'No',
+              onPress: () => setModalVisible(false)
+            },
+            {
+              text: "Yes",
+              onPress: () => {
+                setMontant("")
+              }
+            }
+          ])
+
+        })
+        .catch(error => {
+          // Une erreur s'est produite lors de l'insertion de l'utilisateur
+          console.error('Erreur lors de l insertion de la depense :', error);
+        });
+      }
+      else Alert.alert("La date unserer est invalide Entrer une date superieur a la date d'aujourd'hui")
+  
+     
+    }
+    else Alert.alert('Montant ou date invalide\nLe montant doit etre un nombre;\net le format de la date\n AAAA-MM-JJ')
+  }
+
 
   function refreshPage() {
     getBudgets()
@@ -63,6 +209,7 @@ export function Budget() {
     <View style={styles.contener}>
       <View style={styles.container}>
         <View style={styles.row}>
+          <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: 'center', fontWeight: "bold", }]}>N°</Text>
           <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold", }]}>Categorie</Text>
           <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
           <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>Periode </Text>
@@ -71,9 +218,12 @@ export function Budget() {
           {
             budgets.map((budget, index) => (
               <View key={budget.id} style={styles.row}>
-
-                <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
-                <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>Periode </Text>
+                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#fff", textAlign: 'center', fontWeight: "bold" }]}>
+                <Text >{index + 1}</Text>
+                </TouchableOpacity>
+                <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold" }]}>{budget.nom}</Text>
+                <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>{budget.montant} F</Text>
+                <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>{budget.createdAt.split(" ")[0]} {budget.periode} </Text>
               </View>
             )
             )
@@ -82,8 +232,10 @@ export function Budget() {
       </View>
       <FAB
         icon="plus"
-        onPress={() =>
+        onPress={() =>{
           setModalVisible(true)
+          setDisplayPick(true)
+        }
         }
         style={styles.fab}
       />
@@ -91,7 +243,9 @@ export function Budget() {
         visible={modalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={()=> setModalVisible(false)}
+        onRequestClose={() => {setModalVisible(false)
+          setDisplayPick(true)
+        }}
       >
         <View
           style={{
@@ -99,46 +253,73 @@ export function Budget() {
             justifyContent: "space-between",
           }}>
           <Button title={"cancel"} onPress={() => setModalVisible(false)} />
-          <Button title={"Save"} onPress={() => console.log("save...")} color={'green'}/>
+          <Button title={"Save"} onPress={handleSubmit} color={'green'} />
         </View>
         <View style={{ alignItems: "center", marginTop: 30 }}>
-          <Text style={{fontSize: 20, marginBottom: 10, }}><Text style={{color:'orange', fontStyle:"italic", fontSize: 30}}>S</Text>et <Text style={{color:'orange', fontStyle:"italic", fontSize: 30}}>a</Text> Bu<Text style={{color:'orange', fontStyle:"italic", fontSize: 30}}>D</Text>get</Text>
-            <Picker
-              selectedValue={selectedValue}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedValue(itemValue)
-              }
-              style={styles.picker}
-            >
+          {
+            displayPick == true? (<Text style={{ fontSize: 20, marginBottom: 10, }}><Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>S</Text>et <Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>a</Text> Bu<Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>D</Text>get</Text>
+          ): (<Text text30>Vous pouvez modifier</Text>)
+          }
+          <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={150}>
+            <ScrollView>
               {
-                elementPicker.map(cat => (
-                  <Picker.Item key={cat.id} label={cat.nom} value={cat.id} />
-                ))
+                displayPick ? (
+                  <Picker
+                  selectedValue={selectedValue}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedValue(itemValue)
+                  }
+                  style={styles.picker}
+                >
+                  {
+                    elementPicker.map(cat => (
+                      <Picker.Item key={cat.id} label={cat.nom} value={cat.id} />
+                    ))
+                  }
+                </Picker>
+                ) : (<View style={styles.spaceInput}>
+                  <Ionicons name='list-sharp' color={"orange"} size={40} />
+                  <TextInput style={[styles.input, {width: screenWidth * 0.78}]}
+                    value={bud.nom}
+                    editable={false}
+                    />
+                </View>)
               }
-            </Picker>
-            <View style={styles.spaceInput}>
-              <Ionicons name='logo-usd' color={"orange"} size={40} />
-              <TextInput style={styles.input}
-                value={montant}
-                onChangeText={setMontant}
-                /*onChangeText={()} */
-                placeholder="Enter the Amount" />
-            </View>
-           
-        
-          <View style={styles.DropDownPicker}>
-          <Ionicons name='today' color={"orange"} size={40} />
-          <DropDownPicker
-              open={open}
-              value={value}
-              items={items}
-              placeholder="Choice Periode"
-              setOpen={setOpen}
-              setValue={setValue}
-              setItems={setItems}
-              style={{borderColor: "orange"}}
-            />
-            </View>
+              <View style={styles.spaceInput}>
+                <Ionicons name='logo-usd' color={"orange"} size={40} />
+                <TextInput style={[styles.input, {width: screenWidth * 0.78}]}
+                  value={displayPick? montant : bud.montant+""}
+                  onChangeText={displayPick? setMontant: handleMontant}
+                  /*onChangeText={()} */
+                  placeholder="Enter the Amount" />
+              </View>
+              <Text text30>definir une periode</Text>
+              <View style={[styles.spaceInput,]}>
+                <Text text30>Du </Text>
+                <TextInput style={[styles.input, { backgroundColor: "#f5f5f5" }]}
+                  value={displayPick ? formatDate + " (date d'aujourd'hui)": bud.createdAt}
+                  editable={false}
+                />
+              </View>
+              <Text text30>↓</Text>
+              <View style={[styles.spaceInput,]}>
+                <Text text30>Au </Text>
+                <TextInput style={styles.input}
+                  value={displayPick? periode: bud.periode}
+                  onChangeText={displayPick?setPeriode: handlePeriode}
+                  placeholder="Enter the Amount" />
+              </View>
+            </ScrollView>
+            {
+              displayPick ? null : (<FAB
+                icon={({ size, color }) => (
+                  <Ionicons name="trash-bin-sharp" size={size} color={color} />
+                )}
+                onPress={deleteBud}
+                style={[styles.fab2, { backgroundColor: "red" }]}
+              />)
+            }
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </View>
@@ -205,12 +386,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around"
   },
-  DropDownPicker:{
+  DropDownPicker: {
     marginVertical: 15,
     flexDirection: "row",
-    alignItems:'baseline',
+    alignItems: 'baseline',
     width: screenWidth * 0.7,
     borderColor: "orange"
-  }
+  },
+  fab: {
+    backgroundColor: '#2ECC71',
+    position: 'absolute',
+    bottom: 30,
+    right: 16,
+  },
+  fab2: {
+    backgroundColor: '#2ECC71',
+    position: 'absolute',
+    bottom: 100,
+    right: 0,
+  },
 }
 )

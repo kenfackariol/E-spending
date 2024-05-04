@@ -19,11 +19,6 @@ import { createExpense } from '../utils/database';
 import { getCategories } from '../utils/database';
 import { initCategories } from '../utils/categories_seed';
 
-
-
-
-
-
 const screenWidth = Dimensions.get('window').width;
 
 export function AddExpense({ navigation }) {

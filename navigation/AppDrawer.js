@@ -19,6 +19,7 @@ import { initCategories } from '../utils/categories_seed';
 import { getCategories } from '../utils/database';
 import { Budget } from '../Screen/Budget';
 
+
 //import { dropTable } from '../utils/database';
 
 const Drawer = createDrawerNavigator();
