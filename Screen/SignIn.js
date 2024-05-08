@@ -25,18 +25,6 @@ const index_logo = require("../assets/7849.jpg");
 
 const screenWidth = Dimensions.get('window').width;
 
- // initialize database
- /*useEffect(() => {
-  initDB()
-      .then(() => {
-          console.log('Database initialized');
-      })
-      .catch((error) => {
-          console.error('Error initializing database:', error);
-      })
-}, []);*/
-
-
 export function SignIn({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
