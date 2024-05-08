@@ -214,8 +214,6 @@ export default function SpendingHistory({ navigation }) {
 
             <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold", }]}>Categorie</Text>
             <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
-
-
           </View>
         </View>
         <ScrollView>

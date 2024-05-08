@@ -297,18 +297,7 @@ export const getExpenses = () => {
   });
 };
 
-export const getFirstExpenses = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT id,date, montant FROM Depense LIMIT 5',
-        [],
-        (_, { rows }) => resolve(rows._array),
-        (_, error) => reject(error)
-      );
-    });
-  });
-};
+
 
 export const getExpense = (id) => {
   return new Promise((resolve, reject) => {
@@ -322,6 +311,18 @@ export const getExpense = (id) => {
     });
   });
 }
+export const getLimitExpense = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT id,date, SUM(montant) AS somme_motant From Depense GROUP BY date ORDER BY date DESC LIMIT 5',
+        [],
+        (_, { rows }) => resolve(rows._array),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
 
 export const getExpenseByCatId = (id) => {
   return new Promise((resolve, reject) => {

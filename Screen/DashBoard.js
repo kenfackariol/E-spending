@@ -10,30 +10,39 @@ import { StyleSheet, Text,
     Modal, 
     } from 'react-native';
     import Ionicons from "@expo/vector-icons/Ionicons";
-    import {getFirstExpenses} from '../utils/database';
+    import {getLimitExpense} from '../utils/database';
     import { LineChart } from 'react-native-chart-kit';
-import { date } from "yup";
+    import { FAB } from 'react-native-paper';
 
 
     const screenWidth = Dimensions.get('window').width;
+
     
 export function DashBoard({navigation}){
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [dates, setDates]= useState([])
-    const [montants, setMontants] = useState([])
+    const [datas, setdatas] = useState([])
     const [donnees, setDonnes] = useState([])
     
+    const fetchData = async () => {
+        try {
+          const result = await getLimitExpense();
+  
+          // Créez les tableaux de données pour le graphique
+          const labels = result.map(item => item.date);
+          const values = result.map(item => item.somme_motant);
+  
+          setChartData({ labels, values });
+        } catch (error) {
+          console.error('Erreur lors de la récupération des données : ', error);
+        }
+      };
+   
+      const [chartData, setChartData] = useState({ labels: [], values: [] });
 
-    const data = {
-        labels: ["Lun", "Mar", "Mer", "jeudi", "ven", "sam"],
-        datasets : [
-          {
-            data : [500, 300, 1000, 1500, 1400, 2500]
-          }
-         ]
-      }
+     
       function refreshPage(){
-        getFirstExpenses()
+        getLimitExpense()
             .then(expenses =>{
                 console.log(expenses);
                 setDonnes(expenses)
@@ -42,15 +51,23 @@ export function DashBoard({navigation}){
                 console.error(error)
             })
       }
-      useEffect(()=>{
-            refreshPage()
-            
-      }, [])
+      
+       useEffect(() => {
+        [fetchData(), refreshPage()];
+      }, []);
+      
+      
     return(
         <View style={Mystyle.contener}>
+            
+            
         <View style={{ justifyContent: "center" }}>
+        
             <LineChart
-            data={data}
+             data={{
+                labels: ["jour 1", "jour 2", "jour 3", 'jour 4', "jour 5"],
+                datasets: [{ data: chartData.values }]
+              }}
             width={screenWidth * 1}
             height={300}
             chartConfig={{
@@ -65,33 +82,48 @@ export function DashBoard({navigation}){
 
             <View style={Mystyle.container}>
                 <View style={Mystyle.row}>
-                    <Text style={[Mystyle.cell, {backgroundColor:"#F7DC6F", textAlign:'center', fontWeight:"bold",}]}>Lun</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign:'center', fontWeight:"bold"}]}>Mar</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Mer</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Jeu</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Ven</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Sam</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign:'center', fontWeight:"bold"}]}>Dim</Text>
+                <Text style={[Mystyle.cell, {backgroundColor:"#28B463", textAlign:'center', fontWeight:"bold",}]}>jour</Text>
+                    <Text style={[Mystyle.cell, {backgroundColor:"#F7DC6F", textAlign:'center', fontWeight:"bold",}]}>Date</Text>
+                    <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign:'center', fontWeight:"bold"}]}>Depense Total</Text>
+                   
                 </View>
-            </View>             
-                <View  style={Mystyle.row}>
-                    <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#F7DC6F"}]}>1000 F</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign: "center"}]}>2550 F</Text>
-                    <Text style={[Mystyle.cell, {textAlign: "center", backgroundColor:"#F8C471"}]}>5050 F</Text>
-                    <Text  style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign: "center"}]}>1450</Text>
-                    <Text  style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign: "center"}]}>1000</Text>
-                    <Text  style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign: "center"}]}>1670</Text>
-                    <Text  style={[Mystyle.cell, {backgroundColor: "#F0B27A", textAlign: "center"}]}>140</Text>
+            </View>
+            {
+                donnees.map((donnee, index) => (
+                    <View key={donnee.id}  style={Mystyle.row}>
+                        <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#28B463", textAlign:"center"}]}>Jour {index + 1}</Text>
+                    <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#F7DC6F", textAlign:"center"}]}>{donnee.date}</Text>
+                    <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign: "center"}]}>{donnee.somme_motant} F</Text>
+                </View>  
+
+                ))
+            }
+               
+                <View style={{marginHorizontal: 20,padding:10, flexDirection: "row", }}>   
+                <Ionicons name='help-circle' color={"orange"} size={40} />
+                <Text style={{textAlign:"justify"}}>Le graphe et le tableau ci-dessus vous illustre vos depenses total quodienne par jour pour les 5 deniers Pour plus de datail voir l'historique de vos depense</Text>
                 </View>   
-            
-        
+                <View style={{marginHorizontal: 20,padding:10, flexDirection: "row", }}>   
+                <Ionicons name='information-circle' color={"orange"} size={40} />
+                <Text style={{textAlign:"justify"}}>Opter pour un meilleur suivie en definant un budget pour chacune de vos categories de depense</Text>
+                </View>  
+                
+                <View> 
         <TouchableOpacity 
-        style={{backgroundColor:"#F8C471", padding:20, width:"90%", borderRadius:10,marginTop: 10,  flexDirection:'row', justifyContent: "center"} }
+        style={{backgroundColor:"#48B463", padding:20, width:screenWidth * 0.8, borderRadius:10,marginTop: 20,zIndex: 2,  flexDirection:'row', justifyContent: "center"} }
         onPress={() => navigation.navigate('addExp')}>
-            <Ionicons name='logo-bitcoin' color={"black"} size={22}/>
-            <Text text30 style={{fontStyle:"italic", fontWeight:"bold", fontSize: 22}}>New Expense</Text>
-            <Ionicons name='logo-bitcoin' color={"black"} size={22}/>
+           
+            <Text text30 style={{ fontWeight:"bold", fontSize: 22}}>Nouvelle dépense</Text>
+            
         </TouchableOpacity>
+        </View> 
+        <FAB
+          icon={({ size, color }) => (
+            <Ionicons name="reload" size={size} color={color} />
+          )}
+          onPress={() => {refreshPage(), fetchData()}}
+          style={[Mystyle.fab, {bottom: 110, backgroundColor:"#F2F3F4"}]}
+        />
     </View>
     )
 }
@@ -125,7 +157,7 @@ const Mystyle = StyleSheet.create({
     container: {
         width: screenWidth * 1,
         borderColor: '#000',
-        marginBottom: 5,
+        marginBottom: 2,
       },
       row: {
         flexDirection: 'row',
@@ -138,6 +170,13 @@ const Mystyle = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         paddingVertical: 10,
+      },
+      fab: {
+        backgroundColor: '#2ECC71',
+        marginLeft: screenWidth * 0.8,
+        position: 'relative',
+        bottom: 20,
+        right: 16,
       },
 }
 )

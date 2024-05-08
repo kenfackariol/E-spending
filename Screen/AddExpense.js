@@ -96,7 +96,7 @@ export function AddExpense({ navigation }) {
 
             <View style={styles.spaceInput}>
               <Ionicons name='list-sharp' color={"orange"} size={40} />
-              <Text style={{ color: "orange", fontSize: 20 }}>Choice Category</Text>
+              <Text style={{ color: "orange", fontSize: 20 }}>Choisir une categorie</Text>
             </View>
 
             <Picker
@@ -114,7 +114,7 @@ export function AddExpense({ navigation }) {
               }
 
             </Picker>
-            <Text text30>Selected : {selectedValue}</Text>
+           
             {
               //console.log(selectedValue)
             }
@@ -158,13 +158,13 @@ export function AddExpense({ navigation }) {
             <TouchableOpacity
               style={[styles.button, { backgroundColor: '#F1948A', width: screenWidth * 0.272, marginRight: 10 }]}
               onPress={() => { navigation.goBack() }}>
-              <Text style={{ color: 'white' }} >Cancel</Text>
+              <Text style={{ color: 'white' }} >Annuler</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.button, { backgroundColor: '#48C9B0', width: screenWidth * 0.6, }]}
               onPress={handleSubmit}>
-              <Text style={{ color: "white" }} >ADD</Text>
+              <Text style={{ color: "white" }} >Ajouter</Text>
             </TouchableOpacity>
 
           </View>
@@ -246,7 +246,8 @@ const styles = StyleSheet.create(
       fontSize: 10,
       color: "red",
 
-    }
+    },
+  
 
   }
 )

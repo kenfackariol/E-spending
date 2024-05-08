@@ -31,6 +31,7 @@ export function Budget() {
   const [bud, setBud] = useState([])
   const [displayPick, setDisplayPick] = useState(true)
   const budAlready = []
+  const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
   const [open, setOpen] = useState(false);
   const [idperiode, setidperiode] = useState(null);
@@ -55,37 +56,25 @@ export function Budget() {
     //const catVar = e.nativeEvent.text;
     //exp.categorie = catVar
     //destitution de l'objet exp de la depense
-    if(/^\d+(\.\d{1,2})?$/.test(e))
-      {
-        const newobj = { ...budget }
-        newobj.commentaire = e
-        setBudget(newobj)
+        const newobj = { ...bud }
+        newobj.montant = e
+        setBud(newobj)
         return true
-      }
-      else return false
+      
   }
 
   function handlePeriode(e) {
     //const catVar = e.nativeEvent.text;
     //exp.categorie = catVar
     //destitution de l'objet exp de la depense
-    if(compareDates(e)){
-      const newobj = { ...budget }
+   
+      const newobj = { ...bud }
     newobj.periode = e
-    setBudget(newobj)
-    return true
-    }
-    else return false
-    
+    setBud(newobj)
+    return true 
   }
 
-  //methode pour update 
-  function handleUpdate(){
 
-  }
-
- 
-  
   function compareDates(dateString) {
     // Convertir la saisie en objet Date
     const dateInput = new Date(dateString);
@@ -136,24 +125,38 @@ export function Budget() {
   }
 //methode pour modifier un budget
   function handleUpdate(){
-    if (handleMontant && handlePeriode){
-      let user = 1
-      updateBudget(bud.id, user, bud.id_categorie, bud.montant, bud.periode)
-        .then((upt)=> {
-          console.log(`budget modifier: ${upt}`)
-        })
-        .catch((err)=>{
-          console.error(err)
-        })
+    if (/^\d+(\.\d{1,2})?$/.test(bud.montant) && regex.test(bud.periode)){
+      if(compareDates(bud.periode)){
+        let user = 1
+        Alert.alert("Modification", "Êtes-vous sûr?", [
+          {
+            text: "No",
+            onPress: () => null
+          }, 
+          {
+            text: "Oui",
+            onPress: () => updateBudget(bud.id, user, bud.id_categorie, bud.montant, bud.periode)
+            .then(()=> {
+              console.log(`budget modifié`)
+              Alert.alert("Modifié avec succès")
+              refreshPage()
+            })
+            .catch((err)=>{
+              console.error(err)
+            })
+          }
+        ])
+      }
+     else Alert.alert("Veuiller Entrer une date superieur à celle d'aujourd'hui")
+      
     }
+    else Alert.alert("veillez-vous rassurer d'avoir un montant et une date valide")
   }
 
 
   function handleSubmit() {
-    const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
     console.log(periode);
-
     let user = 1
     if (/^\d+(\.\d{1,2})?$/.test(montant) && regex.test(periode) ) {
       if (compareDates(periode)) {
@@ -161,12 +164,12 @@ export function Budget() {
         .then(insertId => {
           // L'insertion de l'utilisateur a réussi
           console.log('Budget Inserer :', insertId);
-          refreshPage()
 
+          refreshPage()
           Alert.alert("Successfull", "New Budget?", [
             {
               text: 'No',
-              onPress: () => setModalVisible(false)
+              onPress: () => {setModalVisible(false), setMontant("")}
             },
             {
               text: "Yes",
@@ -209,21 +212,21 @@ export function Budget() {
     <View style={styles.contener}>
       <View style={styles.container}>
         <View style={styles.row}>
-          <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: 'center', fontWeight: "bold", }]}>N°</Text>
+          <Text style={[styles.cell, { backgroundColor: "#D5DBDB", textAlign: 'center', fontWeight: "bold", }]}>N°</Text>
           <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold", }]}>Categorie</Text>
           <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
           <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>Periode </Text>
         </View>
-        <ScrollView>
+        <ScrollView style={{marginTop: 5}}>
           {
             budgets.map((budget, index) => (
               <View key={budget.id} style={styles.row}>
-                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#fff", textAlign: 'center', fontWeight: "bold" }]}>
+                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#D5DBDB", textAlign: 'center', fontWeight: "bold" }]}>
                 <Text >{index + 1}</Text>
                 </TouchableOpacity>
-                <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold" }]}>{budget.nom}</Text>
-                <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>{budget.montant} F</Text>
-                <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>{budget.createdAt.split(" ")[0]} {budget.periode} </Text>
+                <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center',  }]}>{budget.nom}</Text>
+                <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', }]}>{budget.montant} F</Text>
+                <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center',  }]}>{budget.createdAt.split(" ")[0]} {budget.periode} </Text>
               </View>
             )
             )
@@ -253,7 +256,11 @@ export function Budget() {
             justifyContent: "space-between",
           }}>
           <Button title={"cancel"} onPress={() => setModalVisible(false)} />
-          <Button title={"Save"} onPress={handleSubmit} color={'green'} />
+          {
+            displayPick ? (<Button title={"Save"} onPress={handleSubmit} color={'green'} />) :
+            (<Button title={"Save"} onPress={handleUpdate} color={'green'} />)
+          }
+          
         </View>
         <View style={{ alignItems: "center", marginTop: 30 }}>
           {
@@ -309,6 +316,7 @@ export function Budget() {
                   onChangeText={displayPick?setPeriode: handlePeriode}
                   placeholder="Enter the Amount" />
               </View>
+              <Text style={{color: "red"}}>NB: format de la periode : AAAA-MM-JJ</Text>
             </ScrollView>
             {
               displayPick ? null : (<FAB
@@ -334,7 +342,7 @@ const styles = StyleSheet.create({
   container: {
     width: screenWidth * 1,
     borderColor: '#000',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',

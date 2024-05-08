@@ -85,9 +85,9 @@ const AppDrawer = () => {
 
       <Drawer.Screen name="Dashboard"
         options={{
-          drawerLabel: "Dashboard",
+          drawerLabel: "Acceuil",
           drawerType: 'slide',
-          title: "Dashboard",
+          title: "Tableau de Bord",
           drawerIcon: () => (
             <Ionicons name='home-outline' size={20} color={"#808080"} />
           )
@@ -96,9 +96,9 @@ const AppDrawer = () => {
 
       <Drawer.Screen name="addExp"
         options={{
-          drawerLabel: "Add expense",
+          drawerLabel: "Ajout de depense",
           drawerType: 'slide',
-          title: "Add Expense",
+          title: "Nouvelle depense",
           drawerIcon: () => (
             <Ionicons name='add-circle-outline' size={20} color={"#808080"} />
           )
@@ -107,9 +107,9 @@ const AppDrawer = () => {
 
       <Drawer.Screen name="history"
         options={{
-          drawerLabel: "Spending history",
+          drawerLabel: "historique",
           drawerType: 'slide',
-          title: "Spending history",
+          title: "historique des depenses",
           drawerIcon: () => (
             <Ionicons name='cash-outline' size={20} color={"#808080"} />
           )
@@ -127,33 +127,23 @@ const AppDrawer = () => {
         }}
         component={Notification} />
 
-      <Drawer.Screen name="Setting"
-        options={{
-          drawerLabel: "Setting",
-          drawerType: "slide",
-          title: "Setting",
-          drawerIcon: () => (
-            <Ionicons name='settings-outline' size={20} color={"#808080"} />
-          )
-        }}
-        component={Setting} />
 
       <Drawer.Screen name="Account"
         options={{
-          drawerLabel: "Account",
+          drawerLabel: "Paramètre",
           drawerType: 'slide',
-          title: "Account",
+          title: "Paramètre",
           drawerIcon: () => (
-            <Ionicons name='person-outline' size={20} color={"#808080"} />
+            <Ionicons name='settings-outline' size={20} color={"#808080"} />
           )
         }}
         component={Account} />
 
 <Drawer.Screen name="budget"
         options={{
-          drawerLabel: "Budget",
+          drawerLabel: "Budgets",
           drawerType: 'slide',
-          title: "Budget",
+          title: "Budget(s)",
           drawerIcon: () => (
             <Ionicons name='wallet-outline' size={20} color={"#808080"} />
           )
