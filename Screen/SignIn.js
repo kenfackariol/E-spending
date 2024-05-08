@@ -1,6 +1,6 @@
 // In App.js in a new project
 
-import react, { useState } from 'react';
+import react, { useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { checkUser } from '../utils/database';
+import { UserContext } from '../contexts/UserContext';
 //import { initDB } from '../utils/database';
 
 
@@ -40,6 +41,8 @@ export function SignIn({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { login, user } = useContext(UserContext);
 
   //validate error message
   const validateForm = () => {
@@ -51,13 +54,9 @@ export function SignIn({ navigation }) {
     return Object.keys(errors).length === 0;
   };
   
-  const goToDash = () => {
-    navigation.navigate('drawer');
-  }
-  
   const handleSubmit = () => {
     if (validateForm()) {
-      //console.log("Submited", username, password)
+      setIsLoggingIn(true)
       checkUser(username, password)
   .then(user => {
     if (user) {
@@ -66,8 +65,9 @@ export function SignIn({ navigation }) {
       setUsername("");
       setPassword("");
       setErrors({});
-      Alert.alert("Merci", username)
-      goToDash();
+      // save the user in the context
+      login(user);
+      setIsLoggingIn(false)
     } else {
       // L'utilisateur n'existe pas
       console.log('Utilisateur non trouvé');
@@ -124,6 +124,14 @@ export function SignIn({ navigation }) {
       <View style={[styles.spaceInput, { alignItems: "center", marginTop: 20 }]}>
         <Text style={{ fontStyle: "italic" }}>Designed By @riol</Text>
       </View>
+      {isLoggingIn && (
+          <View style={styles.backdrop}>
+            <View style={styles.indicatorContainer}>
+              <Text style={styles.indicatorText}>Logging in progress...</Text>
+              <ActivityIndicator animating={isLoggingIn} size="large" color="#0000ff" />
+            </View>
+          </View>
+        )}
     </KeyboardAvoidingView>
   );
 }
@@ -181,7 +189,34 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "red",
     marginBottom: 10,
-  }
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  indicatorContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center', // Center the content horizontally
+    shadowColor: '#000000', // Shadow for elevation
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // Elevation for Android
+  },
+  indicatorText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333333', // Better color contrast
+    marginBottom: 10,
+  },
 
 });
 

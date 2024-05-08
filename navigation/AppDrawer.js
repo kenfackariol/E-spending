@@ -8,7 +8,6 @@ import SpendingHistory from '../Screen/SpendingHistory';
 import { Account } from '../Screen/Account';
 import { Home } from '../Screen/Home';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { initDB, resetDB } from '../utils/database';
 import AuthStack from './AuthStack';
 import { useEffect, useState } from 'react';
 import { AddExpense } from '../Screen/AddExpense';
@@ -24,32 +23,8 @@ import { Budget } from '../Screen/Budget';
 
 const Drawer = createDrawerNavigator();
 
-const initializeDB = async () => {
-  try {
-    // reset DB
-    // let response = await resetDB();
-    // console.log(response);
-
-    // init DB
-    let res = await initDB();
-    console.log(res);
-
-    //init categories
-    //let int = await initCategories();
-    //console.log(int);
-    let cats = await getCategories();
-
-  }
-  catch (error) {
-    console.log(error);
-  }
-}
-
 
 const AppDrawer = () => {
-  useEffect(() => {
-    initializeDB()
-  }, []);
 
   return (
 
@@ -159,11 +134,6 @@ const AppDrawer = () => {
           )
         }}
         component={Budget} />
-
-
-
-
-
     </Drawer.Navigator>
 
   );

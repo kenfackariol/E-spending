@@ -94,7 +94,7 @@ export function SignUp({ navigation }) {
   }
 
   const goToLogin = () => {
-    navigation.navigate('Auth', { screen: 'SignIn' });
+    navigation.navigate('SignIn');
   }
 
   const checkForDuplicate = async (field, value, method) => {
