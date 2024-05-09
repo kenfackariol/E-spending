@@ -3,15 +3,19 @@ import 'react-native-gesture-handler';
 import AppDrawer from './navigation/AppDrawer';
 import AuthStack from './navigation/AuthStack';
 import { NavigationContainer } from '@react-navigation/native';
-import { Drawer } from 'react-native-paper';
+import { UserProvider } from './contexts/UserContext';
+import RootNavigator from './navigation/RootNavigator';
 
 
 export default function App() {
 
   return (
-    <NavigationContainer>
-    <AppDrawer/>
-    </NavigationContainer>
+    <UserProvider>
+      {/* <NavigationContainer>
+        <AppDrawer />
+      </NavigationContainer> */}
+      <RootNavigator />
+    </UserProvider>
   );
 }
 

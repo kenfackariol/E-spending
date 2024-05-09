@@ -10,6 +10,8 @@ export function dropTable() {
     db.transaction(tx => {
     
       tx.executeSql('DROP TABLE Budget');
+      tx.executeSql('DROP TABLE Utilisateur');
+      tx.executeSql('DROP TABLE Depense');
       
     }, (error) => {
       reject(`Error drop database: ${error}`);
@@ -48,6 +50,25 @@ export const resetDB = () => {
       .catch((error) => reject(error));
   });
 };
+
+
+export const dropTables = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql('DROP TABLE IF EXISTS Depense_Obj');
+      tx.executeSql('DROP TABLE IF EXISTS Objectif');
+      tx.executeSql('DROP TABLE IF EXISTS Budget');
+      tx.executeSql('DROP TABLE IF EXISTS Depense');
+      tx.executeSql('DROP TABLE IF EXISTS Categorie');
+      tx.executeSql('DROP TABLE IF EXISTS Utilisateur');
+      tx.executeSql('DROP TABLE IF EXISTS Notification');
+      resolve('Tables dropped');
+    }, (error) => {
+      reject(`Error dropping tables: ${error}`);
+    });
+  });
+};
+
 
 
 export const createUser = (nom, email, numero, mot_de_passe) => {

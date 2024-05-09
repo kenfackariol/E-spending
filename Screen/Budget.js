@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet, Text,
   View, Alert,
@@ -17,6 +17,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
 import { text } from '@fortawesome/fontawesome-svg-core';
+import { UserContext } from "../contexts/UserContext";
 
 const screenWidth = Dimensions.get('window').width;
 export function Budget() {
@@ -40,6 +41,8 @@ export function Budget() {
     { label: 'Week', value: 2 },
     { label: "Month", value: 3 },
   ]);
+  const { user } = useContext(UserContext);
+
   const fetchCategories = async () => {
     try {
       let cats = await getCategories();
@@ -125,7 +128,7 @@ export function Budget() {
   }
 //methode pour modifier un budget
   function handleUpdate(){
-    if (/^\d+(\.\d{1,2})?$/.test(bud.montant) && regex.test(bud.periode)){
+    if(/^\d+(\.\d{1,2})?$/.test(bud.montant) && regex.test(bud.periode)){
       if(compareDates(bud.periode)){
         let user = 1
         Alert.alert("Modification", "Êtes-vous sûr?", [
@@ -160,7 +163,7 @@ export function Budget() {
     let user = 1
     if (/^\d+(\.\d{1,2})?$/.test(montant) && regex.test(periode) ) {
       if (compareDates(periode)) {
-        createBudget(user, selectedValue, montant, periode)
+        createBudget(user.id, selectedValue, montant, periode)
         .then(insertId => {
           // L'insertion de l'utilisateur a réussi
           console.log('Budget Inserer :', insertId);

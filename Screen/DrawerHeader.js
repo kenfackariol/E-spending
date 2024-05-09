@@ -3,15 +3,17 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { getUser } from '../utils/database';
 
 const DrawerHeader = () => {
-  const [letter, setLetter] = useState({})
+  const [letter, setLetter] = useState({email:""})
   const [l, setL] = useState("")
   function userGet(){
     getUser(1)
     .then(user  => {
       console.log(user)
-      setLetter(user)
-      setL(user.nom.charAt(0).toUpperCase())
-      console.log(user.nom.charAt(0).toUpperCase())
+      if(user){
+        setLetter(user)
+        setL(user.nom.charAt(0).toUpperCase())
+        console.log(user.nom.charAt(0).toUpperCase())
+      }
     })
     .catch(error => {
       console.error(error);

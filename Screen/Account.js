@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     StyleSheet, Text,
     View, Alert,
@@ -11,12 +11,14 @@ import {
 import { getUser, updateUser } from "../utils/database";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { FAB } from 'react-native-paper';
+import { UserContext } from "../contexts/UserContext";
 
 
 const screenWidth = Dimensions.get('window').width;
 
-export function Account() {
-    const [user, setUser] = useState({})
+export function Account({ navigation }) {
+    const { user, logout } = useContext(UserContext);
+    const [updateUser, setUser] = useState(user)
     const [letter, setLetter] = useState({})
     const [l, setL] = useState("")
     const [update, setUpdate] = useState(false)
@@ -31,7 +33,7 @@ export function Account() {
         //const catVar = e.nativeEvent.text;
         //exp.categorie = catVar
         //destitution de l'objet exp de la depense
-        const newobj = { ...user }
+        const newobj = { ...updateUser }
         newobj.nom = e
         setUser(newobj)
     }
@@ -40,7 +42,7 @@ export function Account() {
         //const catVar = e.nativeEvent.text;
         //exp.categorie = catVar
         //destitution de l'objet exp de la depense
-        const newobj = { ...user }
+        const newobj = { ...updateUser }
         newobj.numero = e
         setUser(newobj)
     }
@@ -73,9 +75,9 @@ export function Account() {
         //exp.categorie = catVar
         //destitution de l'objet exp de la depense
         console.log(e);
-        const newobj = { ...user }
+        const newobj = { ...updateUser }
         setOldPass(e)
-        if (user.mot_de_passe == e) {
+        if (updateUser.mot_de_passe == e) {
             newobj.mot_de_passe = e
             setUser(newobj)
             setVoldPass(true)
@@ -99,41 +101,50 @@ export function Account() {
             })
     }
 
-    function handleUpdate(){
-        if(/[6]{1}[0-9]{8}/.test(user.numero) && user.nom != "" && verifCpass){
-            updateUser(user.id, user.nom, user.email, user.numero, pass)
-            .then(userUp => {
-                userGet()
-                console.log("user updated succesfully")
-                setUpdate(false)
-                setVoldPass(false)
-                setVerifCpass(false)
-                setVerifPass(false)
-            })
-            .catch(error => {
-                console.error(error);
-            })
+    function handleUpdate() {
+        if (/[6]{1}[0-9]{8}/.test(updateUser.numero) && updateUser.nom != "" && verifCpass) {
+            updateUser(updateUser.id, updateUser.nom, updateUser.email, updateUser.numero, pass)
+                .then(userUp => {
+                    userGet()
+                    console.log("user updated succesfully")
+                    setUpdate(false)
+                    setVoldPass(false)
+                    setVerifCpass(false)
+                    setVerifPass(false)
+                })
+                .catch(error => {
+                    console.error(error);
+                })
         }
         else Alert.alert("Une information n'as pas ete bien renseigné")
     }
     useEffect(() => {
-        userGet();
+        // userGet();
         console.log(user)
     }, []);
+
+    if (!user || Object.keys(user).length === 0) {
+        return (<View style={styles.message}>
+            <Text style={styles.text}>You are now logged out.</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+                <Text style={styles.button}>Log in</Text>
+            </TouchableOpacity>
+        </View>)
+    }
 
 
     return (
 
-        <View style={styles.contener}>
-              <FAB
-        icon={({ size, color }) => (
-            <Ionicons name="log-out-sharp" size={size} color={color} />
-          )}
-        onPress={() =>
-          setModalVisible(true)
-        }
-        style={styles.fabLogOut}
-      />
+        <View style={styles.container}>
+            <FAB
+                icon={({ size, color }) => (
+                    <Ionicons name="log-out-sharp" size={size} color={color} />
+                )}
+                onPress={() =>
+                    logout()
+                }
+                style={styles.fabLogOut}
+            />
             <View
                 style={styles.arealetter}
             >
@@ -146,14 +157,14 @@ export function Account() {
                     <Text style={{ marginTop: 30 }}>Nom d'utilisateur</Text>
                     <TextInput
                         style={styles.input}
-                        value={user.nom}
+                        value={updateUser.nom}
                         onChangeText={handlename}
                         editable={update}
                     />
                     <Text style={{ marginTop: 10 }}>Numero</Text>
                     <TextInput
                         style={styles.input}
-                        value={user.numero + ""}
+                        value={updateUser.numero + ""}
 
                         editable={update}
                     />
@@ -162,54 +173,54 @@ export function Account() {
                         update == true ? (
                             <View >
                                 <Text style={{ marginTop: 10 }}>Ancien Mot de passe</Text>
-                                <View style={[styles.input, {flexDirection: "row", justifyContent: "space-between"}]}>
-                                <TextInput
-                                    
-                                    style={{width: 280}}
-                                    onChangeText={handleAncienMdp}
-                                    editable={update}
-                                />
-                                {
-                                    oldPass < 1? null :
-                                        vOldPass? (
-                                            <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
-                                            : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
-                                }
+                                <View style={[styles.input, { flexDirection: "row", justifyContent: "space-between" }]}>
+                                    <TextInput
+
+                                        style={{ width: 280 }}
+                                        onChangeText={handleAncienMdp}
+                                        editable={update}
+                                    />
+                                    {
+                                        oldPass < 1 ? null :
+                                            vOldPass ? (
+                                                <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
+                                                : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
+                                    }
                                 </View>
 
                                 <Text style={{ marginTop: 10 }}>Nouveau Mot de passe</Text>
-                                <View style={[styles.input, {flexDirection: "row", justifyContent: "space-between"}]}>
-                                <TextInput
-                                    
-                                    style={{width: 280}}
-                                    onChange={handlePass}
-                                    editable={vOldPass}
-                                />
-                                {
-                                    pass < 1? null :
-                                        verifPass? (
-                                            <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
-                                            : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
-                                }
+                                <View style={[styles.input, { flexDirection: "row", justifyContent: "space-between" }]}>
+                                    <TextInput
+
+                                        style={{ width: 280 }}
+                                        onChange={handlePass}
+                                        editable={vOldPass}
+                                    />
+                                    {
+                                        pass < 1 ? null :
+                                            verifPass ? (
+                                                <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
+                                                : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
+                                    }
                                 </View>
                                 <Text style={{ marginTop: 10 }}>Confirmer</Text>
-                                <View style={[styles.input, {flexDirection: "row", justifyContent: "space-between"}]}>
-                                <TextInput
-                                    
-                                    style={{width: 280}}
-                                    onChange={handleCpass}
-                                    editable={verifPass}
-                                />
-                                {
-                                    cpass < 1? null :
-                                        verifCpass? (
-                                            <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
-                                            : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
-                                }
+                                <View style={[styles.input, { flexDirection: "row", justifyContent: "space-between" }]}>
+                                    <TextInput
+
+                                        style={{ width: 280 }}
+                                        onChange={handleCpass}
+                                        editable={verifPass}
+                                    />
+                                    {
+                                        cpass < 1 ? null :
+                                            verifCpass ? (
+                                                <Ionicons name='checkmark-circle' color={"#28B463"} size={15} />)
+                                                : (<Ionicons name='close-circle-sharp' color={"red"} size={20} />)
+                                    }
                                 </View>
-                               
-                               
-                                
+
+
+
                                 <View
                                     style={styles.spaceInput}
                                 >
@@ -218,10 +229,12 @@ export function Account() {
                                         <Text style={{ color: "white", textAlign: "center" }}>Valider</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={() => { setUpdate(false)
-                                    setVerifCpass(false)
-                                    setVoldPass(false)
-                                    setVerifPass(false) }}
+                                    <TouchableOpacity onPress={() => {
+                                        setUpdate(false)
+                                        setVerifCpass(false)
+                                        setVoldPass(false)
+                                        setVerifPass(false)
+                                    }}
                                         style={{ backgroundColor: '#F1948A', width: screenWidth * 0.373, padding: 10, marginLeft: 15, borderRadius: 10 }}>
                                         <Text style={{ color: "white", textAlign: "center" }}>Annuler</Text>
                                     </TouchableOpacity>
@@ -240,25 +253,22 @@ export function Account() {
                             </View>
                         )
                     }
-                
-
-                   
                 </ScrollView>
-                
+
             </KeyboardAvoidingView>
-          
-       <TouchableOpacity onPress={() => console.log('pressed')}
-        style={[styles.fab, {}]}
-       >  
-                    <Text text30>Delete Account</Text> 
-                    </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => console.log('pressed')}
+                style={[styles.fab, {}]}
+            >
+                <Text text30>Delete Account</Text>
+            </TouchableOpacity>
 
         </View>
-        
+
     )
 }
 const styles = StyleSheet.create({
-    contener: {
+    container: {
         flex: 1,
         backgroundColor: "#fff",
         alignItems: 'center',
@@ -288,21 +298,51 @@ const styles = StyleSheet.create({
         marginTop: 25,
         flexDirection: "row",
         alignItems: "baseline",
-      },
-      fab: {
+    },
+    fab: {
         backgroundColor: '#CF5151',
         position: 'absolute',
         bottom: 30,
         right: 0,
-         padding: 10,
-          borderWidth: 4,
-           borderColor: "red"
-      },
-      fabLogOut: {
+        padding: 10,
+        borderWidth: 4,
+        borderColor: "red"
+    },
+    fabLogOut: {
         backgroundColor: '#D45151',
         position: 'absolute',
-       right: 1,
+        right: 1,
         top: 0,
-      }
+    },
+    message: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#f0f4f8', // Light background color
+        borderRadius: 10,
+        elevation: 3, // Shadow for Android
+        shadowColor: '#000', // Shadow for iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        margin: 20,
+    },
+    text: {
+        fontSize: 18,
+        color: '#333',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    button: {
+        fontSize: 16,
+        color: '#ffffff',
+        backgroundColor: '#4CAF50', // Green color for the button
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        textAlign: 'center',
+        overflow: 'hidden',
+    },
 }
 )

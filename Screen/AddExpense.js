@@ -11,13 +11,14 @@ import {
 } from 'react-native';
 
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
 import { createExpense } from '../utils/database';
 import { getCategories } from '../utils/database';
 import { initCategories } from '../utils/categories_seed';
+import { UserContext } from '../contexts/UserContext';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,6 +32,7 @@ export function AddExpense({ navigation }) {
   const formatDate = currentDate.toLocaleDateString();
   const [elementPicker, setElementPicker] = useState([])
   const [catSelected, setCatSelected] = useState("")
+  const { user } = useContext(UserContext);
 
   const fetchCategories = async () => {
     try {
@@ -46,10 +48,10 @@ export function AddExpense({ navigation }) {
 
   function handleSubmit() {
     if (/^\d+(\.\d{1,2})?$/.test(montant)) {
-      const user = 1;
+      // const user = 1;
       const dateString = moment(currentDate).format('YYYY-MM-DD');
-      console.log(user, " ", selectedValue, " ", montant, " ", dateString, " ", comment)
-      createExpense(user, selectedValue, montant, dateString, comment)
+      console.log(user.id, " ", selectedValue, " ", montant, " ", dateString, " ", comment)
+      createExpense(user.id, selectedValue, montant, dateString, comment)
         .then(insertId => {
           // L'insertion de l'utilisateur a réussi
           console.log('Depense insérée avec succès, ID d insertion :', insertId);
