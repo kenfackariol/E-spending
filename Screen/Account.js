@@ -154,14 +154,14 @@ export function Account({ navigation }) {
             <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={100}
                 style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={{ marginTop: 30 }}>Nom d'utilisateur</Text>
+                    <Text style={{ marginTop: 30 }}>User name</Text>
                     <TextInput
                         style={styles.input}
                         value={updateUser.nom}
                         onChangeText={handlename}
                         editable={update}
                     />
-                    <Text style={{ marginTop: 10 }}>Numero</Text>
+                    <Text style={{ marginTop: 10 }}>Number</Text>
                     <TextInput
                         style={styles.input}
                         value={updateUser.numero + ""}

@@ -61,11 +61,13 @@ export function SignIn({ navigation }) {
       console.log('Utilisateur non trouvé');
       Alert.alert("nom ou password \nIncorrect")
       setPassword("")
+      setIsLoggingIn(false)
     }
   })
   .catch(error => {
     // Une erreur s'est produite lors de la vérification de l'utilisateur
     console.error('Erreur lors de la vérification de l\'utilisateur :', error);
+    setIsLoggingIn(false)
   });
       
     }

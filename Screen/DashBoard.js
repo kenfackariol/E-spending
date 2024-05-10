@@ -29,7 +29,7 @@ export function DashBoard({navigation}){
           const result = await getLimitExpense();
   
           // Créez les tableaux de données pour le graphique
-          const labels = result.map(item => item.date);
+          const labels = result.map(item => item.date.substr(-5));
           const values = result.map(item => item.somme_motant);
   
           setChartData({ labels, values });
@@ -65,7 +65,7 @@ export function DashBoard({navigation}){
         
             <LineChart
              data={{
-                labels: ["jour 1", "jour 2", "jour 3", 'jour 4', "jour 5"],
+                labels: chartData.labels,
                 datasets: [{ data: chartData.values }]
               }}
             width={screenWidth * 1}
@@ -82,8 +82,8 @@ export function DashBoard({navigation}){
 
             <View style={Mystyle.container}>
                 <View style={Mystyle.row}>
-                <Text style={[Mystyle.cell, {backgroundColor:"#28B463", textAlign:'center', fontWeight:"bold",}]}>jour</Text>
-                    <Text style={[Mystyle.cell, {backgroundColor:"#F7DC6F", textAlign:'center', fontWeight:"bold",}]}>Date</Text>
+                
+                    <Text style={[Mystyle.cell, {backgroundColor:"#48B463", textAlign:'center', fontWeight:"bold",color: "#fff"}]}>Date</Text>
                     <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign:'center', fontWeight:"bold"}]}>Depense Total</Text>
                    
                 </View>
@@ -91,8 +91,8 @@ export function DashBoard({navigation}){
             {
                 donnees.map((donnee, index) => (
                     <View key={donnee.id}  style={Mystyle.row}>
-                        <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#28B463", textAlign:"center"}]}>Jour {index + 1}</Text>
-                    <Text style={[Mystyle.cell, {color: "black", backgroundColor:"#F7DC6F", textAlign:"center"}]}>{donnee.date}</Text>
+                        
+                    <Text style={[Mystyle.cell, {color: "black",backgroundColor:"#48B463", textAlign:"center", color: "#fff"}]}>{donnee.date}</Text>
                     <Text style={[Mystyle.cell, {backgroundColor:"#F8C471", textAlign: "center"}]}>{donnee.somme_motant} F</Text>
                 </View>  
 

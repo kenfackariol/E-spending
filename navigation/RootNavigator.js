@@ -6,6 +6,7 @@ import AppDrawer from './AppDrawer';
 import { View, ActivityIndicator } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
 import { dropTables, initDB, resetDB } from '../utils/database';
+import { initCategories } from '../utils/categories_seed';
 
 function RootNavigator() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -23,9 +24,9 @@ function RootNavigator() {
             console.log(res);
 
             //init categories
-            let int = await initCategories();
-            console.log(int);
-            let cats = await getCategories();
+            //  let int = await initCategories();
+            // console.log(int);
+            // let cats = await getCategories();
 
         }
         catch (error) {
