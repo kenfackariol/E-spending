@@ -24,8 +24,8 @@ function RootNavigator() {
             console.log(res);
 
             //init categories
-            //  let int = await initCategories();
-            // console.log(int);
+            // let int = await initCategories();
+            // //console.log(int);
             // let cats = await getCategories();
 
         }
