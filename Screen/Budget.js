@@ -130,7 +130,7 @@ export function Budget() {
   function handleUpdate(){
     if(/^\d+(\.\d{1,2})?$/.test(bud.montant) && regex.test(bud.periode)){
       if(compareDates(bud.periode)){
-        let user = 1
+        // let user = 1
         Alert.alert("Modification", "Êtes-vous sûr?", [
           {
             text: "No",
@@ -138,7 +138,7 @@ export function Budget() {
           }, 
           {
             text: "Oui",
-            onPress: () => updateBudget(bud.id, user, bud.id_categorie, bud.montant, bud.periode)
+            onPress: () => updateBudget(bud.id, user.id, bud.id_categorie, bud.montant, bud.periode)
             .then(()=> {
               console.log(`budget modifié`)
               Alert.alert("Modifié avec succès")
@@ -160,7 +160,7 @@ export function Budget() {
   function handleSubmit() {
 
     console.log(periode);
-    let user = 1
+    // let user = 1
     if (/^\d+(\.\d{1,2})?$/.test(montant) && regex.test(periode) ) {
       if (compareDates(periode)) {
         createBudget(user.id, selectedValue, montant, periode)
