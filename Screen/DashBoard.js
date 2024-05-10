@@ -30,7 +30,7 @@ export function DashBoard({navigation}){
   
           // Créez les tableaux de données pour le graphique
           const labels = result.map(item => item.date.substr(-5));
-          const values = result.map(item => item.somme_motant);
+          const values = result.map(item => Number(item.somme_motant));
   
           setChartData({ labels, values });
         } catch (error) {
