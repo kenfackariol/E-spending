@@ -5,7 +5,7 @@ import AuthStack from './AuthStack';
 import AppDrawer from './AppDrawer';
 import { View, ActivityIndicator } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { dropTables, initDB, resetDB } from '../utils/database';
+import { dropTables, getCategories, initDB, resetDB } from '../utils/database';
 import { initCategories } from '../utils/categories_seed';
 
 function RootNavigator() {
@@ -27,6 +27,7 @@ function RootNavigator() {
             // let int = await initCategories();
             // //console.log(int);
             // let cats = await getCategories();
+            // console.log(cats);
 
         }
         catch (error) {
