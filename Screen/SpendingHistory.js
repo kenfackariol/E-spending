@@ -231,12 +231,7 @@ export default function SpendingHistory({ navigation }) {
                 </View>
               </TouchableOpacity>
 
-              <Text key={expense.id} style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: "center" }]}>
-
-                {
-                  expense.nom
-                }
-
+              <Text key={expense.id} style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: "center" }]}>{ expense.nom }
               </Text>
               <Text style={[styles.cell, { textAlign: "center", backgroundColor: "#F8C471" }]}>{expense.montant} F</Text>
 

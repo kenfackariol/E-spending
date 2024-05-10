@@ -106,7 +106,7 @@ export function Budget() {
   }
 
   //methode pour supprimer
-  function deleteBud() {
+  function deleteBud(id) {
     Alert.alert("suppression", "Est-vous sûr?", [
       {
         text: 'Non',
@@ -114,7 +114,7 @@ export function Budget() {
       },
       {
         text: "Oui",
-        onPress: () => deleteBudget(bud.id)
+        onPress: () => deleteBudget(id)
           .then(expDel => {
             Alert.alert(`Budget Supprimé!`);
             refreshPage()
@@ -214,22 +214,31 @@ export function Budget() {
   return (
     <View style={styles.contener}>
       <View style={styles.container}>
-        <View style={styles.row}>
-          <Text style={[styles.cell, { backgroundColor: "#D5DBDB", textAlign: 'center', fontWeight: "bold", }]}>N°</Text>
-          <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center', fontWeight: "bold", }]}>Categorie</Text>
-          <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
-          <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center', fontWeight: "bold" }]}>Periode </Text>
-        </View>
-        <ScrollView style={{marginTop: 5}}>
+        
+        <ScrollView >
           {
             budgets.map((budget, index) => (
-              <View key={budget.id} style={styles.row}>
-                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#D5DBDB", textAlign: 'center', fontWeight: "bold" }]}>
-                <Text >{index + 1}</Text>
+              <View key={budget.id} style={styles.cadre}>
+                
+                <Text  style={[styles.cell, { backgroundColor: "#717D7E", textAlign: 'center', fontWeight: "bold" }]}>{index + 1}</Text>
+               
+                <Text style={[styles.cell, {backgroundColor: "#fff", textAlign: 'justify',  },]}><Text style={{fontWeight:"600",}}> Categorie : </Text>{budget.nom}</Text>
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify", }]}><Text style={{fontWeight:"600",}}> Montant : </Text> {budget.montant} F</Text>
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify",  }]}> <Text style={{fontWeight:"600", }}>Montant : </Text> Du {budget.createdAt.split(" ")[0]} Au {budget.periode} </Text>
+                <View style={{flexDirection: "row",justifyContent: "flex-end"}}>
+                
+                <View style={{width: screenWidth * 0.2, marginRight: 15}}>
+                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#5DADE2", textAlign: 'center', fontWeight: "bold",  }]}>
+                <Text >Modifier</Text>
                 </TouchableOpacity>
-                <Text style={[styles.cell, { backgroundColor: "#F7DC6F", textAlign: 'center',  }]}>{budget.nom}</Text>
-                <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', }]}>{budget.montant} F</Text>
-                <Text style={[styles.cell, { backgroundColor: "#F9B471", textAlign: 'center',  }]}>{budget.createdAt.split(" ")[0]} {budget.periode} </Text>
+                </View>
+
+                <View style={{width: screenWidth * 0.2, marginRight: 40}}>
+                <TouchableOpacity onPress={() => deleteBud(budget.id)} style={[styles.cell, { backgroundColor: "#EC7063", textAlign: 'center', fontWeight: "bold", width: screenWidth * 0.2 }]}>
+                <Text >Supprimer</Text>
+                </TouchableOpacity>
+                </View>
+                </View>
               </View>
             )
             )
@@ -321,15 +330,7 @@ export function Budget() {
               </View>
               <Text style={{color: "red"}}>NB: format de la periode : AAAA-MM-JJ</Text>
             </ScrollView>
-            {
-              displayPick ? null : (<FAB
-                icon={({ size, color }) => (
-                  <Ionicons name="trash-bin-sharp" size={size} color={color} />
-                )}
-                onPress={deleteBud}
-                style={[styles.fab2, { backgroundColor: "red" }]}
-              />)
-            }
+         
           </KeyboardAvoidingView>
         </View>
       </Modal>
@@ -340,7 +341,8 @@ const styles = StyleSheet.create({
   contener: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    backgroundColor: "#EAEDED",
   },
   container: {
     width: screenWidth * 1,
@@ -416,5 +418,10 @@ const styles = StyleSheet.create({
     bottom: 100,
     right: 0,
   },
+  cadre: {
+    margin: 10,
+    
+    borderRadius: 15,
+  }
 }
 )

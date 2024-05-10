@@ -30,7 +30,9 @@ export function SignIn({ navigation }) {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  //const [seePass, setSeePass] =  useState(true);
   const { login, user } = useContext(UserContext);
+  const [seePass, setSeePass] = useState(true)
 
   //validate error message
   const validateForm = () => {
@@ -91,7 +93,22 @@ export function SignIn({ navigation }) {
   
           <View style={[styles.spaceInput, { marginTop: 30 }]}>
             <Ionicons name='lock-closed' color={"#F5B041"} size={40} />
-            <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your password' secureTextEntry onChangeText={setPassword} value={password} />
+            <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your password' 
+            secureTextEntry={seePass}
+            onChangeText={setPassword} 
+            value={password} />
+            {
+              seePass ? (    <TouchableOpacity 
+                onPress={()=> setSeePass(false)}
+                style={{position: "absolute", right: 15,top: 5}} >
+                <Ionicons style={{}} name='eye-outline' color={"orange"} size={30} />
+                </TouchableOpacity>) : (  <TouchableOpacity 
+            onPress={()=> setSeePass(true)}
+            style={{position: "absolute", right: 15,top: 5}} >
+            <Ionicons style={{}} name='eye-off-outline' color={"orange"} size={30} />
+            </TouchableOpacity>)
+            }
+          
           </View>
           {errors.password ? <Text style={[styles.errorText, { marginBottom: 10 }]}>{errors.password}</Text> : null}
   
