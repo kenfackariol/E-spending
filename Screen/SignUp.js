@@ -33,6 +33,7 @@ export function SignUp({ navigation }) {
   const [verifPass, setVerifPass] = useState(false)
   const [cpass, setCpass] = useState("")
   const [verifCpass, setVerifCpass] = useState(false)
+  const [seePass, setSeePass] = useState(true)
 
 
 
@@ -249,7 +250,7 @@ export function SignUp({ navigation }) {
             <TextInput
               placeholder='Enter your Password'
               style={styles.input}
-              secureTextEntry
+              secureTextEntry={seePass}
               onChange={e => handlePass(e)}
             />
             {
@@ -257,6 +258,17 @@ export function SignUp({ navigation }) {
                 verifPass ? (
                   <Ionicons name='checkmark-circle' color={"#28B463"} size={25} />)
                   : (<Ionicons name='close-circle-sharp' color={"red"} size={25} />)
+            }
+                 {
+              seePass ? (    <TouchableOpacity 
+                onPress={()=> setSeePass(false)}
+                style={{position: "absolute", right: 15,top: 5}} >
+                <Ionicons style={{}} name='eye-outline' color={"orange"} size={30} />
+                </TouchableOpacity>) : (  <TouchableOpacity 
+            onPress={()=> setSeePass(true)}
+            style={{position: "absolute", right: 15,top: 5}} >
+            <Ionicons style={{}} name='eye-off-outline' color={"orange"} size={30} />
+            </TouchableOpacity>)
             }
           </View>
           {

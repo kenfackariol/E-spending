@@ -1,40 +1,30 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { getUser } from '../utils/database';
+import { UserContext } from "../contexts/UserContext";
 
 const DrawerHeader = () => {
   const [letter, setLetter] = useState({email:""})
   const [l, setL] = useState("")
-  function userGet(){
-    getUser(1)
-    .then(user  => {
-      console.log(user)
-      if(user){
-        setLetter(user)
-        setL(user.nom.charAt(0).toUpperCase())
-        console.log(user.nom.charAt(0).toUpperCase())
-      }
-    })
-    .catch(error => {
-      console.error(error);
-    })
-  }
+  const {user} = useContext(UserContext);
+
 
   useEffect(() => {
-    userGet();
+    
+    console.log(user)
     }, []);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={userGet}>
+      <TouchableOpacity >
       <View
         source={require('../assets/19199299.jpg')}
         style={styles.arealetter}
       >
-        <Text style={{fontSize: 40, fontWeight:"bold", color: "white"}}>{l}</Text>
+        <Text style={{fontSize: 40, fontWeight:"bold", color: "white"}}>{user.nom.charAt(0).toUpperCase()}</Text>
       </View>
       </TouchableOpacity>
-      <Text style={styles.text}>{letter.email}</Text>
+      <Text style={styles.text}>{user.email}</Text>
     </View>
   );
 };

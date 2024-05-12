@@ -62,7 +62,7 @@ export function DashBoard({ navigation }) {
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
-              borderRadius: 16
+              borderRadius: 1
             },
             propsForDots: {
               r: "6",
@@ -72,8 +72,7 @@ export function DashBoard({ navigation }) {
           }}
           bezier
           style={{
-            marginVertical: 8,
-            borderRadius: 16
+            marginVertical: 2,
           }}
         />
       </View>
@@ -93,7 +92,7 @@ export function DashBoard({ navigation }) {
 
       <View style={{ marginHorizontal: 20, padding: 10, flexDirection: "row", }}>
         <Ionicons name='help-circle' color={"orange"} size={40} />
-        <Text style={{ textAlign: "justify" }}>Le graphe et le tableau ci-dessus vous illustre vos depenses total quodienne par jour pour les 5 deniers Pour plus de datail voir l'historique de vos depense</Text>
+        <Text style={{ textAlign: "justify" }}>Le graphe et le tableau ci-dessus vous illustre vos depenses total quodienne par jour pour les deniers recents Pour plus de datail voir l'historique de vos depense</Text>
       </View>
       <View style={{ marginHorizontal: 20, padding: 10, flexDirection: "row", }}>
         <Ionicons name='information-circle' color={"orange"} size={40} />
@@ -107,7 +106,6 @@ export function DashBoard({ navigation }) {
           <Text style={{ fontWeight: "bold", fontSize: 22 }}>Nouvelle dépense</Text>
         </TouchableOpacity>
       </View>
-
       <FAB
         icon={({ size, color }) => (
           <Ionicons name="reload" size={size} color={color} />
@@ -123,7 +121,6 @@ const Mystyle = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
   },
   tableContainer: {
     width: screenWidth,
@@ -142,8 +139,8 @@ const Mystyle = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    margin: 16,
-    right: 0,
+    
+    right: 10,
     bottom: 0,
   },
 });

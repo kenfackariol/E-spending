@@ -3,20 +3,15 @@ import * as FileSystem from 'expo-file-system';
 
 const db = SQLite.openDatabase('expenses.db');
 
-export function dropTable() {
+export function alterTable() {
   return new Promise((resolve, reject) => {
-    
-
     db.transaction(tx => {
-    
-   
-      
-      tx.executeSql('DROP TABLE Depense');
+      tx.executeSql('ALTER TABLE Depense ADD status TEXT');
       
     }, (error) => {
       reject(`Error drop database: ${error}`);
     }, () => {
-      resolve('Table DELETED');
+      resolve('Table is already modify');
     });
   });
 }
@@ -27,10 +22,10 @@ export function initDB() {
       tx.executeSql('CREATE TABLE IF NOT EXISTS Utilisateur (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, email TEXT, numero INTEGER, mot_de_passe TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Categorie (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT)');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant INTEGER, date VARCHAR(10), commentaire TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant INTEGER, periode TEXT, createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Budget (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, id_categorie INTEGER, montant INTEGER, debut TEXT, fin TEXT, statut TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id), FOREIGN KEY (id_categorie) REFERENCES Categorie(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Objectif (id INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER, montant_cible REAL, date_limite TEXT, FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id))');
       tx.executeSql('CREATE TABLE IF NOT EXISTS Depense_Obj (id INTEGER PRIMARY KEY AUTOINCREMENT, id_depense INTEGER, id_objectif INTEGER, FOREIGN KEY (id_depense) REFERENCES Depense(id), FOREIGN KEY (id_objectif) REFERENCES Objectif(id))');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Notification (id_message INTEGER PRIMARY KEY AUTOINCREMENT,dateN TEXT, notifs TEXT);');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Notification (id_message INTEGER PRIMARY KEY AUTOINCREMENT,id_budget INTEGER, createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, notifs TEXT, statut TEXT,  FOREIGN KEY (id_budget) REFERENCES Budget(id));');
     }, (error) => {
       reject(`Error initializing database: ${error}`);
     }, () => {
@@ -38,7 +33,7 @@ export function initDB() {
     });
   });
 }
-
+//status des budgets : expiré, depassé, non atteind 
 
 export const resetDB = () => {
   return new Promise((resolve, reject) => {
@@ -52,16 +47,12 @@ export const resetDB = () => {
 };
 
 
-export const dropTables = () => {
+export const dropAllTables = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
-      tx.executeSql('DROP TABLE IF EXISTS Depense_Obj');
-      tx.executeSql('DROP TABLE IF EXISTS Objectif');
-      tx.executeSql('DROP TABLE IF EXISTS Budget');
-      tx.executeSql('DROP TABLE IF EXISTS Depense');
-      tx.executeSql('DROP TABLE IF EXISTS Categorie');
-      tx.executeSql('DROP TABLE IF EXISTS Utilisateur');
-      tx.executeSql('DROP TABLE IF EXISTS Notification');
+     
+      tx.executeSql('DROP TABLE Notification');
+      
       resolve('Tables dropped');
     }, (error) => {
       reject(`Error dropping tables: ${error}`);
@@ -393,12 +384,12 @@ export const deleteExpense = (id) => {
 };
 
 
-export const createBudget = (id_utilisateur, id_categorie, montant, periode) => {
+export const createBudget = (id_utilisateur, id_categorie, montant, debut, fin, status) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO Budget (id_utilisateur, id_categorie, montant, periode) VALUES (?, ?, ?, ?)',
-        [id_utilisateur, id_categorie, montant, periode],
+        'INSERT INTO Budget (id_utilisateur, id_categorie, montant, debut, fin, statut) VALUES (?, ?, ?, ?, ?, ?)',
+        [id_utilisateur, id_categorie, montant, debut, fin, status],
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
           else reject('Error inserting budget');
@@ -409,12 +400,28 @@ export const createBudget = (id_utilisateur, id_categorie, montant, periode) => 
   });
 };
 
-export const updateBudget = (id, id_utilisateur, id_categorie, montant, periode) => {
+export const updateBudget = (id, id_utilisateur, id_categorie, montant, debut, fin, status) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE Budget SET id_utilisateur = ?, id_categorie = ?, montant = ?, periode = ? WHERE id = ?',
-        [id_utilisateur, id_categorie, montant, periode, id],
+        'UPDATE Budget SET id_utilisateur = ?, id_categorie = ?, montant = ?,debut = ?, fin = ?, statut = ? WHERE id = ?',
+        [id_utilisateur, id_categorie, montant, debut, fin, status, id],
+        (_, { rowsAffected }) => {
+          if (rowsAffected > 0) resolve();
+          else reject('Error updating budget');
+        },
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const updateBudgetStatut = (id, status) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE Budget SET statut = ? WHERE id = ?',
+        [status, id],
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve();
           else reject('Error updating budget');
@@ -445,7 +452,33 @@ export const getBudgets = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Budget.id, Budget.id_categorie, Budget.createdAt, Budget.montant, Budget.periode, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id',
+        'SELECT Budget.id, Budget.id_categorie, Budget.debut, Budget.fin, Budget.montant,Budget.statut, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id',
+        [],
+        (_, { rows }) => resolve(rows._array),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getMontantBudget = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT montant FROM Budget WHERE id_categorie = ?',
+        [id],
+        (_, { rows }) => resolve(rows._array),
+        (_, error) => reject(error)
+      );
+    });
+  });
+}
+
+export const getSumMontantByCategory = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT Categorie.id, Categorie.nom, Depense.id_categorie, SUM(Depense.montant) AS somme_montant FROM Depense JOIN Categorie ON Depense.id_categorie = Categorie.id GROUP BY Categorie.id, Depense.id_categorie;',
         [],
         (_, { rows }) => resolve(rows._array),
         (_, error) => reject(error)
@@ -458,7 +491,7 @@ export const getBudget = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Budget.id, Budget.id_categorie, Budget.createdAt, Budget.montant, Budget.periode, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id WHERE Budget.id = ?',
+        'SELECT Budget.id, Budget.id_categorie, Budget.debut, Budget.fin,Budget.statut, Budget.montant, Categorie.nom FROM Budget JOIN Categorie ON Budget.id_categorie = Categorie.id WHERE Budget.id = ?',
         [id],
         (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
         (_, error) => reject(error)
@@ -467,3 +500,76 @@ export const getBudget = (id) => {
   });
 }
 
+export const createNotification = (id_budget, notifs, statut) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'INSERT INTO Notification ( id_budget, notifs, statut) VALUES (?, ?, ?)',
+        [id_budget,notifs, statut],
+        (_, { rowsAffected, insertId }) => {
+          if (rowsAffected > 0) resolve(insertId);
+          else reject('Error inserting notification');
+        },
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const updateNotification = (id, id_budget, notifs, statut) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE Notification SET statut = ?, id_budget = ?, notifs = ? WHERE id_message = ?',
+        [statut, id_budget, notifs, id],
+        (_, { rowsAffected }) => {
+          if (rowsAffected > 0) resolve();
+          else reject('Error updating budget');
+        },
+        (_, error) => reject(error)
+      );
+    });
+  });
+}
+
+export const deletNotification = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM Notification WHERE id_message = ?',
+        [id],
+        (_, { rowsAffected }) => {
+          if (rowsAffected > 0) resolve();
+          else reject('Error deleting notif');
+        },
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getNotifications = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Notification',
+        [],
+        (_, { rows }) => resolve(rows._array),
+        (_, error) => reject(error)
+      );
+    });
+  });
+};
+
+export const getNotificationByBudgetId = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM Notification WHERE id_message = ?',
+        [id],
+        (_, { rows }) => resolve(rows.length > 0 ? rows.item(0) : null),
+        (_, error) => reject(error)
+      );
+    });
+  });
+}

@@ -5,8 +5,11 @@ import AuthStack from './AuthStack';
 import AppDrawer from './AppDrawer';
 import { View, ActivityIndicator } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { dropTables, getCategories, initDB, resetDB } from '../utils/database';
+import {getCategories, initDB, resetDB, alterTable, dropAllTables, getNotifications} from '../utils/database';
 import { initCategories } from '../utils/categories_seed';
+import { updateBudgetStatutAuto, processNotifications } from '../utils/databaseUtil';
+
+
 
 function RootNavigator() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -22,11 +25,13 @@ function RootNavigator() {
             // init DB
             let res = await initDB();
             console.log(res);
-
+            updateBudgetStatutAuto();
+            processNotifications()
+            console.log(await getNotifications());
             //init categories
-            // let int = await initCategories();
+            //let int = await initCategories();
             // //console.log(int);
-            // let cats = await getCategories();
+            //let cats = await getCategories();
             // console.log(cats);
 
         }

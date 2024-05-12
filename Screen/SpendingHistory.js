@@ -216,7 +216,7 @@ export default function SpendingHistory({ navigation }) {
             <Text style={[styles.cell, { backgroundColor: "#F8C471", textAlign: 'center', fontWeight: "bold" }]}>Montant</Text>
           </View>
         </View>
-        <ScrollView>
+        <ScrollView >
           {expenses.map((expense, index) => (
 
             <View key={expense.id} style={styles.row}>

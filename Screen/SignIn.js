@@ -16,6 +16,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { checkUser } from '../utils/database';
 import { UserContext } from '../contexts/UserContext';
+import { getUsers } from '../utils/database';
 //import { initDB } from '../utils/database';
 
 
@@ -33,6 +34,7 @@ export function SignIn({ navigation }) {
   //const [seePass, setSeePass] =  useState(true);
   const { login, user } = useContext(UserContext);
   const [seePass, setSeePass] = useState(true)
+  const [exist, setExist] = useState()
 
   //validate error message
   const validateForm = () => {
@@ -43,6 +45,22 @@ export function SignIn({ navigation }) {
     setErrors(errors)
     return Object.keys(errors).length === 0;
   };
+  
+  
+    const find = () => {
+      getUsers()
+      .then(trouver => {
+        console.log(trouver)
+        setExist(1)
+      
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
+    
+
+ 
   
   const handleSubmit = () => {
     if (validateForm()) {
@@ -61,7 +79,7 @@ export function SignIn({ navigation }) {
     } else {
       // L'utilisateur n'existe pas
       console.log('Utilisateur non trouvé');
-      Alert.alert("nom ou password \nIncorrect")
+      Alert.alert("Incorrect user name or password")
       setPassword("")
       setIsLoggingIn(false)
     }
@@ -74,7 +92,11 @@ export function SignIn({ navigation }) {
       
     }
   }
-
+useEffect(()=>{
+  
+  find()
+  
+}, [])
 
   //return to the main app
   return (
@@ -84,7 +106,7 @@ export function SignIn({ navigation }) {
       <ScrollView showsHorizontalScrollIndicator={false} style={styles.formulaire}>
         <Image source={index_logo} style={{ width: screenWidth * 0.9, marginBottom: 25, height: 200, marginTop: 60 }} />
   
-        <View style={styles.formContainer}>
+        <View >
           <View style={styles.spaceInput}>
             <Ionicons name='person' color={"#F5B041"} size={40} />
             <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your user name' onChangeText={setUsername} value={username} />
@@ -115,8 +137,10 @@ export function SignIn({ navigation }) {
           <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
             <Text style={{ fontSize: 10, color: "grey", marginVertical: 10, textAlign: "right" }}>Forgot password?</Text>
           </TouchableOpacity>
-  
-          <View style={[styles.spaceInput, { justifyContent: 'space-between' }]}>
+            {
+              exist == 1 ? (<TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
+                <Text style={{ color: "white" }}>Submit</Text>
+              </TouchableOpacity>): (  <View style={[styles.spaceInput, { justifyContent: 'space-between' }]}>
             <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
               <Text style={{ color: "white" }}>Submit</Text>
             </TouchableOpacity>
@@ -124,7 +148,9 @@ export function SignIn({ navigation }) {
             <TouchableOpacity style={[styles.button, styles.createButton]} onPress={() => navigation.navigate("SignUp")}>
               <Text>Sign Up</Text>
             </TouchableOpacity>
-          </View>
+          </View>)
+            }
+          
         </View>
       </ScrollView>
   
@@ -181,7 +207,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: "#F5B041",
-    marginRight: 10,
+    marginRight: 4,
   },
   createButton: {
     backgroundColor: "#EAF2F8",

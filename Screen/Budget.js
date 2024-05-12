@@ -17,7 +17,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
 import { text } from '@fortawesome/fontawesome-svg-core';
+
 import { UserContext } from "../contexts/UserContext";
+import DatePickerField from "../components/DatePickerField";
 
 const screenWidth = Dimensions.get('window').width;
 export function Budget() {
@@ -26,27 +28,24 @@ export function Budget() {
   const [modalVisible, setModalVisible] = useState(false)
   const [elementPicker, setElementPicker] = useState([])
   const [montant, setMontant] = useState("");
-  const [periode, setPeriode] = useState("");
+  const [debut, setDebut] = useState("");
+  const [fin, setFin] = useState("");
   const currentDate = new Date();
   const formatDate = currentDate.toLocaleDateString();
   const [bud, setBud] = useState([])
   const [displayPick, setDisplayPick] = useState(true)
   const budAlready = []
   const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+  const [initialDateValue, setInitialDateValue] = useState(new Date() )
+  const [status, setStatus] = useState("Enable")
 
-  const [open, setOpen] = useState(false);
-  const [idperiode, setidperiode] = useState(null);
-  const [items, setItems] = useState([
-    { label: 'Day', value: 1 },
-    { label: 'Week', value: 2 },
-    { label: "Month", value: 3 },
-  ]);
+
   const { user } = useContext(UserContext);
 
   const fetchCategories = async () => {
     try {
       let cats = await getCategories();
-      console.log(cats);
+     
       setElementPicker(cats)
 
     }
@@ -54,55 +53,62 @@ export function Budget() {
       console.log(error);
     }
   }
+
   //fonction pour les modicfications
   function handleMontant(e) {
     //const catVar = e.nativeEvent.text;
     //exp.categorie = catVar
     //destitution de l'objet exp de la depense
-        const newobj = { ...bud }
-        newobj.montant = e
-        setBud(newobj)
-        return true
-      
-  }
-
-  function handlePeriode(e) {
-    //const catVar = e.nativeEvent.text;
-    //exp.categorie = catVar
-    //destitution de l'objet exp de la depense
-   
-      const newobj = { ...bud }
-    newobj.periode = e
+    const newobj = { ...bud }
+    newobj.montant = e
     setBud(newobj)
-    return true 
+    return true
+
   }
 
+  function handleDebut(e) {
+    e = new Date(e).toISOString().split("T")[0]
+    const newobj = { ...bud }
+    newobj.debut = e
+    setBud(newobj)
+    return true
+  }
+
+  function handleFin(e) {
+    e = new Date(e).toISOString().split("T")[0]
+    const newobj = { ...bud }
+    newobj.fin = e
+    setBud(newobj)
+    return true
+  }
 
   function compareDates(dateString) {
+    console.log([dateInput])
     // Convertir la saisie en objet Date
     const dateInput = new Date(dateString);
-  
+
     // Obtenir la date d'aujourd'hui
     const today = new Date();
-  
+
     // Comparer les dates
     if (dateInput < today) {
       return false;
-    }  else {
+    } else {
       return true;
     }
   }
-  function getbudgetbyid(id){
+  function getbudgetbyid(id) {
     setDisplayPick(false)
-    setModalVisible(true)
     getBudget(id)
       .then((bud) => {
         console.log(bud)
         setBud(bud)
-      } )
-      .catch ((error) => {
+        setModalVisible(true)
+      })
+      .catch((error) => {
         console.error(error)
       })
+      
   }
 
   //methode pour supprimer
@@ -126,71 +132,86 @@ export function Budget() {
       },
     ])
   }
-//methode pour modifier un budget
-  function handleUpdate(){
-    if(/^\d+(\.\d{1,2})?$/.test(bud.montant) && regex.test(bud.periode)){
-      if(compareDates(bud.periode)){
-        // let user = 1
+  //methode pour modifier un budget
+  function handleUpdate() {
+    if (/^\d+(\.\d{1,2})?$/.test(bud.montant)) {
+      if (compareDates(bud.periode)) {
+         let status = "Enable"
         Alert.alert("Modification", "Êtes-vous sûr?", [
           {
             text: "No",
             onPress: () => null
-          }, 
+          },
           {
             text: "Oui",
-            onPress: () => updateBudget(bud.id, user.id, bud.id_categorie, bud.montant, bud.periode)
-            .then(()=> {
-              console.log(`budget modifié`)
-              Alert.alert("Modifié avec succès")
-              refreshPage()
-            })
-            .catch((err)=>{
-              console.error(err)
-            })
+            onPress: () => updateBudget(bud.id, user.id, bud.id_categorie, bud.montant, bud.debut, bud.fin, status)
+              .then(() => {
+                console.log(`budget modifié`)
+                Alert.alert("Modifié avec succès")
+                refreshPage()
+              })
+              .catch((err) => {
+                console.error(err)
+              })
           }
         ])
       }
-     else Alert.alert("Veuiller Entrer une date superieur à celle d'aujourd'hui")
-      
+      else Alert.alert("Veuiller Entrer une date superieur à celle d'aujourd'hui")
+
     }
     else Alert.alert("veillez-vous rassurer d'avoir un montant et une date valide")
   }
 
+  // ajout de budgets
+  function verifDebut(e) {
+    e = new Date(e).toISOString().split("T")[0]
+    console.log(e)
+    setDebut(e)
+  }
+
+  function verifFin(e) {
+    e = new Date(e).toISOString().split("T")[0]
+    console.log(e)
+    setFin(e)
+  }
 
   function handleSubmit() {
 
-    console.log(periode);
-    // let user = 1
-    if (/^\d+(\.\d{1,2})?$/.test(montant) && regex.test(periode) ) {
-      if (compareDates(periode)) {
-        createBudget(user.id, selectedValue, montant, periode)
-        .then(insertId => {
-          // L'insertion de l'utilisateur a réussi
-          console.log('Budget Inserer :', insertId);
-
-          refreshPage()
-          Alert.alert("Successfull", "New Budget?", [
-            {
-              text: 'No',
-              onPress: () => {setModalVisible(false), setMontant("")}
-            },
-            {
-              text: "Yes",
-              onPress: () => {
-                setMontant("")
+    console.log([debut]);
+    console.log([fin])
+    
+    if (/^\d+(\.\d{1,2})?$/.test(montant)) {
+      if (compareDates(debut) && compareDates(fin)) {
+        let status = "Enable"
+        createBudget(user.id, selectedValue, montant, debut == "" ? new Date().toISOString().split("T")[0] : debut, fin == "" ? new Date().toISOString().split("T")[0] : fin, status)
+          .then(insertId => {
+            // L'insertion de l'utilisateur a réussi
+            console.log('Budget Inserer :', insertId);
+            setDebut("")
+            setFin("")
+            refreshPage()
+            Alert.alert("Successfull", "New Budget?", [
+              {
+                text: 'No',
+                onPress: () => { setModalVisible(false), setMontant("") }
+              },
+              {
+                text: "Yes",
+                onPress: () => {
+                  setMontant("")
+                }
               }
-            }
-          ])
+            ])
 
-        })
-        .catch(error => {
-          // Une erreur s'est produite lors de l'insertion de l'utilisateur
-          console.error('Erreur lors de l insertion de la depense :', error);
-        });
+          })
+          .catch(error => {
+            // Une erreur s'est produite lors de l'insertion de l'utilisateur
+            console.error('Erreur lors de l insertion du budget :', error);
+          });
       }
-      else Alert.alert("La date unserer est invalide Entrer une date superieur a la date d'aujourd'hui")
-  
-     
+      else Alert.alert("La date inserer est invalide Entrer une date superieur a la date d'aujourd'hui")
+
+
     }
     else Alert.alert('Montant ou date invalide\nLe montant doit etre un nombre;\net le format de la date\n AAAA-MM-JJ')
   }
@@ -214,30 +235,31 @@ export function Budget() {
   return (
     <View style={styles.contener}>
       <View style={styles.container}>
-        
-        <ScrollView >
+
+        <ScrollView>
           {
             budgets.map((budget, index) => (
               <View key={budget.id} style={styles.cadre}>
-                
-                <Text  style={[styles.cell, { backgroundColor: "#717D7E", textAlign: 'center', fontWeight: "bold" }]}>{index + 1}</Text>
-               
-                <Text style={[styles.cell, {backgroundColor: "#fff", textAlign: 'justify',  },]}><Text style={{fontWeight:"600",}}> Categorie : </Text>{budget.nom}</Text>
-                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify", }]}><Text style={{fontWeight:"600",}}> Montant : </Text> {budget.montant} F</Text>
-                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify",  }]}> <Text style={{fontWeight:"600", }}>Montant : </Text> Du {budget.createdAt.split(" ")[0]} Au {budget.periode} </Text>
-                <View style={{flexDirection: "row",justifyContent: "flex-end"}}>
-                
-                <View style={{width: screenWidth * 0.2, marginRight: 15}}>
-                <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#5DADE2", textAlign: 'center', fontWeight: "bold",  }]}>
-                <Text >Modifier</Text>
-                </TouchableOpacity>
-                </View>
 
-                <View style={{width: screenWidth * 0.2, marginRight: 40}}>
-                <TouchableOpacity onPress={() => deleteBud(budget.id)} style={[styles.cell, { backgroundColor: "#EC7063", textAlign: 'center', fontWeight: "bold", width: screenWidth * 0.2 }]}>
-                <Text >Supprimer</Text>
-                </TouchableOpacity>
-                </View>
+                <Text style={[styles.cell, { backgroundColor: "#717D7E", textAlign: 'center', fontWeight: "bold" }]}>{index + 1}</Text>
+
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: 'justify', },]}><Text style={{ fontWeight: "600", }}> Categorie : </Text>{budget.nom}</Text>
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify", }]}><Text style={{ fontWeight: "600", }}> Montant : </Text> {budget.montant} F</Text>
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify", }]}> <Text style={{ fontWeight: "600", }}>begin : </Text> Du {budget.debut} Au {budget.fin} </Text>
+                <Text style={[styles.cell, { backgroundColor: "#fff", textAlign: "justify", }]}> <Text style={{ fontWeight: "600", }}>Status : </Text>{budget.statut}</Text>
+                <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+
+                  <View style={{  marginRight: 10 }}>
+                    <TouchableOpacity onPress={() => getbudgetbyid(budget.id)} style={[styles.cell, { backgroundColor: "#5DADE2", width: screenWidth * 0.3, textAlign: 'center', fontWeight: "bold", }]}>
+                      <Text >Modifier</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={{ }}>
+                    <TouchableOpacity onPress={() => deleteBud(budget.id)} style={[styles.cell, { backgroundColor: "#EC7063", textAlign: 'center', fontWeight: "bold", width: screenWidth * 0.3 }]}>
+                      <Text >Supprimer</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             )
@@ -247,7 +269,7 @@ export function Budget() {
       </View>
       <FAB
         icon="plus"
-        onPress={() =>{
+        onPress={() => {
           setModalVisible(true)
           setDisplayPick(true)
         }
@@ -258,7 +280,8 @@ export function Budget() {
         visible={modalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => {setModalVisible(false)
+        onRequestClose={() => {
+          setModalVisible(false)
           setDisplayPick(true)
         }}
       >
@@ -270,67 +293,57 @@ export function Budget() {
           <Button title={"cancel"} onPress={() => setModalVisible(false)} />
           {
             displayPick ? (<Button title={"Save"} onPress={handleSubmit} color={'green'} />) :
-            (<Button title={"Save"} onPress={handleUpdate} color={'green'} />)
+              (<Button title={"Save"} onPress={handleUpdate} color={'green'} />)
           }
-          
+
         </View>
         <View style={{ alignItems: "center", marginTop: 30 }}>
           {
-            displayPick == true? (<Text style={{ fontSize: 20, marginBottom: 10, }}><Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>S</Text>et <Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>a</Text> Bu<Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>D</Text>get</Text>
-          ): (<Text text30>Vous pouvez modifier</Text>)
+            displayPick == true ? (<Text style={{ fontSize: 20, marginBottom: 10, }}><Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>S</Text>et <Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>a</Text> Bu<Text style={{ color: 'orange', fontStyle: "italic", fontSize: 30 }}>D</Text>get</Text>
+            ) : (<Text text30>Vous pouvez modifier</Text>)
           }
           <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={150}>
             <ScrollView>
               {
                 displayPick ? (
                   <Picker
-                  selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedValue(itemValue)
-                  }
-                  style={styles.picker}
-                >
-                  {
-                    elementPicker.map(cat => (
-                      <Picker.Item key={cat.id} label={cat.nom} value={cat.id} />
-                    ))
-                  }
-                </Picker>
+                    selectedValue={selectedValue}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setSelectedValue(itemValue)
+                    }
+                    style={styles.picker}
+                  >
+                    {
+                      elementPicker.map(cat => (
+                        <Picker.Item key={cat.id} label={cat.nom} value={cat.id} />
+                      ))
+                    }
+                  </Picker>
                 ) : (<View style={styles.spaceInput}>
                   <Ionicons name='list-sharp' color={"orange"} size={40} />
-                  <TextInput style={[styles.input, {width: screenWidth * 0.78}]}
+                  <TextInput style={[styles.input, { width: screenWidth * 0.78 }]}
                     value={bud.nom}
                     editable={false}
-                    />
+                  />
                 </View>)
               }
               <View style={styles.spaceInput}>
                 <Ionicons name='logo-usd' color={"orange"} size={40} />
-                <TextInput style={[styles.input, {width: screenWidth * 0.78}]}
-                  value={displayPick? montant : bud.montant+""}
-                  onChangeText={displayPick? setMontant: handleMontant}
+                <TextInput style={[styles.input, { width: screenWidth * 0.78 }]}
+                  value={displayPick ? montant : bud.montant + ""}
+                  onChangeText={displayPick ? setMontant : handleMontant}
                   /*onChangeText={()} */
                   placeholder="Enter the Amount" />
               </View>
               <Text text30>definir une periode</Text>
-              <View style={[styles.spaceInput,]}>
-                <Text text30>Du </Text>
-                <TextInput style={[styles.input, { backgroundColor: "#f5f5f5" }]}
-                  value={displayPick ? formatDate + " (date d'aujourd'hui)": bud.createdAt}
-                  editable={false}
-                />
+              <View style={{ alignItems: "center" }}>
+                <DatePickerField initialValue={displayPick? new Date() :new Date(bud.debut) }  onChange={displayPick ? verifDebut : handleDebut} />
               </View>
               <Text text30>↓</Text>
-              <View style={[styles.spaceInput,]}>
-                <Text text30>Au </Text>
-                <TextInput style={styles.input}
-                  value={displayPick? periode: bud.periode}
-                  onChangeText={displayPick?setPeriode: handlePeriode}
-                  placeholder="Enter the Amount" />
+              <View style={{ alignItems: "center" }}>
+                <DatePickerField initialValue={displayPick? new Date() :new Date(bud.fin) } onChange={displayPick ? verifFin : handleFin} />
               </View>
-              <Text style={{color: "red"}}>NB: format de la periode : AAAA-MM-JJ</Text>
             </ScrollView>
-         
           </KeyboardAvoidingView>
         </View>
       </Modal>
@@ -420,7 +433,7 @@ const styles = StyleSheet.create({
   },
   cadre: {
     margin: 10,
-    
+
     borderRadius: 15,
   }
 }

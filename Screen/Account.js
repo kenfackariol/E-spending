@@ -85,22 +85,6 @@ export function Account({ navigation }) {
         else setVoldPass(false)
     }
 
-
-
-    function userGet() {
-        getUser(1)
-            .then(user => {
-                console.log(user)
-                setLetter(user)
-                setUser(user)
-                setL(user.nom.charAt(0).toUpperCase())
-                console.log(user.nom.charAt(0).toUpperCase())
-            })
-            .catch(error => {
-                console.error(error);
-            })
-    }
-
     function handleUpdate() {
         if (/[6]{1}[0-9]{8}/.test(updateUser.numero) && updateUser.nom != "" && verifCpass) {
             updateUser(updateUser.id, updateUser.nom, updateUser.email, updateUser.numero, pass)
@@ -118,10 +102,7 @@ export function Account({ navigation }) {
         }
         else Alert.alert("Une information n'as pas ete bien renseigné")
     }
-    useEffect(() => {
-        // userGet();
-        console.log(user)
-    }, []);
+   
 
     if (!user || Object.keys(user).length === 0) {
         return (<View style={styles.message}>
@@ -148,13 +129,13 @@ export function Account({ navigation }) {
             <View
                 style={styles.arealetter}
             >
-                <Text style={{ fontSize: 40, fontWeight: "bold", color: "white" }}>{l}</Text>
+                <Text style={{ fontSize: 40, fontWeight: "bold", color: "white" }}>{user.nom.charAt(0).toUpperCase()}</Text>
             </View>
-            <Text style={styles.text}>{letter.email}</Text>
+            <Text style={styles.text}>{user.email}</Text>
             <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={100}
                 style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Text style={{ marginTop: 30 }}>User name</Text>
+                    <Text style={{ }}>User name</Text>
                     <TextInput
                         style={styles.input}
                         value={updateUser.nom}
@@ -272,7 +253,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: "center"
     },
     input: {
         width: screenWidth * 0.785,
@@ -290,7 +271,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#808B96',
         height: 80,
         width: 80,
-        marginTop: 150,
+        marginTop: 50,
         marginBottom: 10,
     },
     spaceInput: {
