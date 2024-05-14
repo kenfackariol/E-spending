@@ -9,6 +9,15 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
+// Simple logging middleware
+const requestLogger = (req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+    next(); // Proceed to the next middleware/handler
+};
+
+// Usage in Express app
+app.use(requestLogger);
+
 // Initialize the database
 app.get('/init', async (req, res) => {
     try {
@@ -251,6 +260,7 @@ app.get('/expenses/category/:id', async (req, res) => {
 // Check User Credentials
 app.post('/users/check', async (req, res) => {
     const { nom, mot_de_passe } = req.body;
+    console.log('checking for credentials');
     try {
         const user = await db.checkUser(nom, mot_de_passe);
         if (user) {
@@ -308,7 +318,23 @@ app.get('/users/phone/:numero', async (req, res) => {
     }
 });
 
+
+// Handle undefined routes
+app.use((req, res, next) => {
+    res.status(404).json({ error: 'Route not found' });
+});
+
+// Handle errors
+app.use((error, req, res, next) => {
+    const status = error.statusCode || 500;
+    const message = error.message;
+    const data = error.data;
+    res.status(status).json({
+        error: { message, data },
+    });
+});
+
 // Start server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${port}`);
 });

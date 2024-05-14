@@ -8,3 +8,47 @@
 2024-05-14 15:22:12 [INFO]: Category "Epargne" created.
 2024-05-14 15:22:12 [INFO]: Category "Service public" created.
 2024-05-14 15:22:12 [INFO]: Category "Divers" created.
+2024-05-14 16:00:00 [INFO]: Running processNotifications...
+2024-05-14 16:00:00 [ERROR]: Error processing notifications: getSumMontantByCategory is not a function
+2024-05-14 17:00:00 [INFO]: Running processNotifications...
+2024-05-14 17:00:00 [ERROR]: Error processing notifications: getSumMontantByCategory is not a function
+2024-05-14 17:01:11 [INFO]: Category "Alimentaire" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Vestimentaire" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Loisir" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Transport" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Impot" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Sante" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Education" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Epargne" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Service public" already exists.
+2024-05-14 17:01:11 [INFO]: Category "Divers" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Alimentaire" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Vestimentaire" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Loisir" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Transport" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Impot" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Sante" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Education" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Epargne" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Service public" already exists.
+2024-05-14 17:17:35 [INFO]: Category "Divers" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Alimentaire" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Vestimentaire" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Loisir" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Transport" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Impot" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Sante" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Education" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Epargne" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Service public" already exists.
+2024-05-14 17:29:10 [INFO]: Category "Divers" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Alimentaire" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Vestimentaire" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Loisir" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Transport" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Impot" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Sante" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Education" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Epargne" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Service public" already exists.
+2024-05-14 17:29:21 [INFO]: Category "Divers" already exists.
