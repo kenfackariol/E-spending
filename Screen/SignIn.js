@@ -14,10 +14,10 @@ import {
   Dimensions,
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { checkUser } from '../utils/database';
+import { checkUser } from '../api/api';
 import { UserContext } from '../contexts/UserContext';
-import { getUsers } from '../utils/database';
-//import { initDB } from '../utils/database';
+import { getUsers } from '../api/api';
+//import { initDB } from '../api/api';
 
 
 

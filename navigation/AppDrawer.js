@@ -14,12 +14,10 @@ import { AddExpense } from '../Screen/AddExpense';
 import { AddBudget } from '../Screen/AddBudget';
 import { View, SafeAreaView } from 'react-native';
 import DrawerHeader from "../Screen/DrawerHeader";
-import { initCategories } from '../utils/categories_seed';
-import { getCategories } from '../utils/database';
 import { Budget } from '../Screen/Budget';
 
 
-//import { dropTable } from '../utils/database';
+//import { dropTable } from '../api/api';
 
 const Drawer = createDrawerNavigator();
 

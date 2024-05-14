@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { getUser } from '../utils/database';
+import { getUser } from '../api/api';
 import { UserContext } from "../contexts/UserContext";
 
 const DrawerHeader = () => {

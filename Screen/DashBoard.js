@@ -5,7 +5,7 @@ import {
   TouchableOpacity, Dimensions, Modal,
 } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { getLimitExpense } from '../utils/database';
+import { getLimitExpense } from '../api/api';
 import { LineChart } from 'react-native-chart-kit';
 import { FAB } from 'react-native-paper';
 

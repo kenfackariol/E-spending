@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useEffect } from 'react';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { createUser, getUserUsername, getUserByEmail, getUserByPhone } from '../utils/database';
+import { createUser, getUserUsername, getUserByEmail, getUserByPhone } from '../api/api';
 
 
 

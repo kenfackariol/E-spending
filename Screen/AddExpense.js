@@ -15,8 +15,8 @@ import { useContext, useEffect, useState } from 'react';
 
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
-import { createExpense } from '../utils/database';
-import { getCategories } from '../utils/database';
+import { createExpense } from '../api/api';
+import { getCategories } from '../api/api';
 import { initCategories } from '../utils/categories_seed';
 import { UserContext } from '../contexts/UserContext';
 
