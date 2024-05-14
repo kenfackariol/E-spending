@@ -30,7 +30,6 @@ node server.js
 The server will be running at `http://localhost:3000`.
 
 ### API Endpoints
-```
 
 #### User Management
 - **Create a User**
