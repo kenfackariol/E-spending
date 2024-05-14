@@ -1,57 +1,36 @@
-Certainly! Here's a comprehensive `README.md` file for your project:
-
-**README.md**
-```md
 # Expense Management API
 
 ## Overview
 This is an API server built using Express.js for managing expenses, categories, and budgets. It includes features such as user management, automatic budget status updates, and notification processing.
 
 ## Features
-- **User Management**: Create, update, retrieve, and delete users.
-- **Category Management**: Create, update, retrieve, and delete categories.
-- **Expense Management**: Create, update, retrieve, and delete expenses.
-- **Budget Status Automation**: Automatically update budget statuses daily.
-- **Notifications**: Process budget notifications hourly and send alerts.
-- **Database Seeding**: Initialize categories from a JSON file.
-
-## Project Structure
-```
-project-root/
-│
-├── categorie.json        <- JSON file for initial categories
-├── db.js                 <- Database functions
-├── logger.js             <- Logging configuration
-├── notifications.js      <- Notification and budget processing logic
-├── scheduler.js          <- Scheduled tasks using node-cron
-├── seeds.js              <- Database seeding logic
-└── server.js             <- Main API server
-```
+* User Management: Create, update, retrieve, and delete users.
+* Category Management: Create, update, retrieve, and delete categories.
+* Expense Management: Create, update, retrieve, and delete expenses.
+* Budget Status Automation: Automatically update budget statuses daily.
+* Notifications: Process budget notifications hourly and send alerts.
+* Database Seeding: Initialize categories from a JSON file.
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (>= 14.x)
-- npm
+* Node.js (>= 14.x)
+* npm
 
 ### Installation
-1. Clone the repository:
-    ```bash
-    git clone <repository_url>
-    ```
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
+```
+git clone <repository_url>
+npm install
+```
 
 ### Running the Server
-1. Start the server:
-    ```bash
-    node server.js
-    ```
-2. The server will be running at `http://localhost:3000`.
+```
+node server.js
+```
+The server will be running at `http://localhost:3000`.
 
 ### API Endpoints
+```
 
 #### User Management
 - **Create a User**
