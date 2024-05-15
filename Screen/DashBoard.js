@@ -20,7 +20,7 @@ export function DashBoard({ navigation }) {
     try {
       const result = await getLimitExpense();
       const labels = result.map(item => item.date.substr(-5));
-      const values = result.map(item => item.somme_motant);
+      const values = result.map(item => item.somme_montant);
       console.log(`labels, values: `, labels, values);
       setChartData({ labels, values });
     } catch (error) {
@@ -85,7 +85,7 @@ export function DashBoard({ navigation }) {
         {donnees.map((donnee, index) => (
           <View key={index} style={Mystyle.row}>
             <Text style={[Mystyle.cell, { backgroundColor: "#48B463", textAlign: "center", color: "#fff" }]}>{donnee.date}</Text>
-            <Text style={[Mystyle.cell, { backgroundColor: "#F8C471", textAlign: "center" }]}>{donnee.somme_motant} F</Text>
+            <Text style={[Mystyle.cell, { backgroundColor: "#F8C471", textAlign: "center" }]}>{donnee.somme_montant} F</Text>
           </View>
         ))}
       </View>

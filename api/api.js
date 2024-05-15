@@ -1,24 +1,47 @@
 // api.js
 
 // Set the base URL for your API
-const API_BASE_URL = 'http://127.0.0.1:3000';
+const API_BASE_URL = 'http://192.168.99.64:3000';
 
 // Helper function to handle `fetch` requests with JSON
-const fetchWithJson = async (url, options = {}) => {
+const fetchWithJson = async (endpoint, options = {}) => {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+
+    const {
+        headers = {},
+        ...restOptions
+    } = options;
+
+    const defaultHeaders = {
+        'Content-Type': 'application/json'
+    };
+
     const response = await fetch(url, {
         headers: {
-            'Content-Type': 'application/json',
+            ...defaultHeaders,
+            ...headers
         },
-        ...options,
+        ...restOptions
     });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'API request failed');
+    let responseData;
+
+    try {
+        responseData = await response.json();
+    } catch (error) {
+        responseData = { message: 'Invalid JSON response' };
     }
 
-    return response.json();
+    if (!response.ok) {
+        const error = new Error(responseData.error || responseData.message || 'An error occurred');
+        error.status = response.status;
+        error.responseData = responseData;
+        throw error;
+    }
+
+    return responseData;
 };
+
 
 // Users
 export const createUser = (nom, email, numero, mot_de_passe) =>
@@ -104,14 +127,68 @@ export const deleteExpense = (id) =>
 export const getExpenses = () =>
     fetchWithJson(`${API_BASE_URL}/expenses`);
 
-export const getExpenseById = (id) =>
+export const getExpense = (id) =>
     fetchWithJson(`${API_BASE_URL}/expenses/${id}`);
 
-export const getRecentExpenses = () =>
+export const getLimitExpense = () =>
     fetchWithJson(`${API_BASE_URL}/expenses/limit/recent`);
 
-export const getExpensesByCategoryId = (id) =>
+export const getExpenseByCatId = (id) =>
     fetchWithJson(`${API_BASE_URL}/expenses/category/${id}`);
+
+// Budgets
+export const createBudget = (id_utilisateur, id_categorie, montant, debut, fin, statut) =>
+    fetchWithJson(`${API_BASE_URL}/budgets`, {
+        method: 'POST',
+        body: JSON.stringify({ id_utilisateur, id_categorie, montant, debut, fin, statut }),
+    });
+
+export const updateBudgetStatut = (id, statut) =>
+    fetchWithJson(`${API_BASE_URL}/budgets/${id}/statut`, {
+        method: 'PUT',
+        body: JSON.stringify({ statut }),
+    });
+
+export const updateBudget = (id, id_utilisateur, id_categorie, montant, debut, fin, statut) =>
+    fetchWithJson(`${API_BASE_URL}/budgets/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ id_utilisateur, id_categorie, montant, debut, fin, statut }),
+    });
+
+export const deleteBudget = (id) =>
+    fetchWithJson(`${API_BASE_URL}/budgets/${id}`, {
+        method: 'DELETE',
+    });
+
+export const getBudgets = () =>
+    fetchWithJson(`${API_BASE_URL}/budgets`);
+
+export const getBudget = (id) =>
+    fetchWithJson(`${API_BASE_URL}/budgets/${id}`);
+
+// Notifications
+export const createNotification = (id_budget, notifs, statut) =>
+    fetchWithJson(`${API_BASE_URL}/notifications`, {
+        method: 'POST',
+        body: JSON.stringify({ id_budget, notifs, statut }),
+    });
+
+export const updateNotification = (id, id_budget, notifs, statut) =>
+    fetchWithJson(`${API_BASE_URL}/notifications/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ id_budget, notifs, statut }),
+    });
+
+export const deleteNotification = (id) =>
+    fetchWithJson(`${API_BASE_URL}/notifications/${id}`, {
+        method: 'DELETE',
+    });
+
+export const getNotifications = () =>
+    fetchWithJson(`${API_BASE_URL}/notifications`);
+
+export const getNotificationByBudgetId = (id) =>
+    fetchWithJson(`${API_BASE_URL}/notifications/${id}/budget`);
 
 // Database
 export const initDB = () =>

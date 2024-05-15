@@ -327,7 +327,7 @@
 //   return new Promise((resolve, reject) => {
 //     db.transaction(tx => {
 //       tx.executeSql(
-//         'SELECT id,date, SUM(montant) AS somme_motant From Depense GROUP BY date ORDER BY date DESC LIMIT 5',
+//         'SELECT id,date, SUM(montant) AS somme_montant From Depense GROUP BY date ORDER BY date DESC LIMIT 5',
 //         [],
 //         (_, { rows }) => resolve(rows._array),
 //         (_, error) => reject(error)

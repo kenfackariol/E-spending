@@ -8,12 +8,12 @@ import {
   Dimensions,
   Button
 } from 'react-native';
-import { getExpenses, getExpense, getExpenseByCatId, getCategories, } from "../utils/database";
+import { getExpenses, getExpense, getExpenseByCatId, getCategories, } from "../api/api";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";
-import { updateExpense } from "../utils/database";
-import { deleteExpense } from "../utils/database";
+import { updateExpense } from "../api/api";
+import { deleteExpense } from "../api/api";
 import { Dropdown } from 'react-native-element-dropdown';
 import { FAB } from 'react-native-paper';
 
@@ -53,7 +53,6 @@ export default function SpendingHistory({ navigation }) {
     getExpenseByCatId(id)
       .then(expenses => {
         setExpenses(expenses)
-        
       })
       .catch(error => {
         console.error(error);
@@ -65,6 +64,7 @@ export default function SpendingHistory({ navigation }) {
     getExpenses()
       .then(expenses => {
         setValeur(null)
+        console.log(expenses);
         setExpenses(expenses)
       })
       .catch(error => {
@@ -74,6 +74,7 @@ export default function SpendingHistory({ navigation }) {
     //getcategorie pour inserer pour le dropdown et les updateExp
     getCategories()
       .then(cats => {
+        console.log(cats);
         setCategories(cats)
         
       })

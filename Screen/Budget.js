@@ -8,11 +8,10 @@ import {
   Modal,
   TouchableOpacity, Dimensions
 } from 'react-native';
-import { getBudgets, getBudget, deleteBudget, updateBudget, createBudget } from "../utils/database";
+import { getBudgets, getBudget, deleteBudget, updateBudget, createBudget, getCategories } from "../api/api";
 import { ScrollView } from "react-native-gesture-handler";
 import { FAB } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
-import { getCategories } from "../utils/database";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';

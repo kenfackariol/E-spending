@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet, Text,
   View, Alert,
-  TextInput, 
+  TextInput,
   Image, ActivityIndicator,
   ScrollView,
   KeyboardAvoidingView,
@@ -34,7 +34,7 @@ export function SignIn({ navigation }) {
   //const [seePass, setSeePass] =  useState(true);
   const { login, user } = useContext(UserContext);
   const [seePass, setSeePass] = useState(true)
-  const [exist, setExist] = useState()
+  const [exist, setExist] = useState(false)
 
   //validate error message
   const validateForm = () => {
@@ -45,126 +45,130 @@ export function SignIn({ navigation }) {
     setErrors(errors)
     return Object.keys(errors).length === 0;
   };
-  
-  
-    const find = () => {
-      getUsers()
+
+
+  const find = () => {
+    getUsers()
       .then(trouver => {
         console.log(trouver)
-        setExist(1)
-      
+        if (trouver.length > 0) {
+          setExist(true)
+        }
+
       })
       .catch(err => {
         console.log(err)
       })
-    }
-    
+  }
 
- 
-  
+
+
+
   const handleSubmit = () => {
     if (validateForm()) {
       setIsLoggingIn(true)
       checkUser(username, password)
-  .then(user => {
-    if (user) {
-      // L'utilisateur existe, vous pouvez accéder à ses données
-      console.log('Utilisateur trouvé :', user);
-      setUsername("");
-      setPassword("");
-      setErrors({});
-      // save the user in the context
-      login(user);
-      setIsLoggingIn(false)
-    } else {
-      // L'utilisateur n'existe pas
-      console.log('Utilisateur non trouvé');
-      Alert.alert("Incorrect user name or password")
-      setPassword("")
-      setIsLoggingIn(false)
-    }
-  })
-  .catch(error => {
-    // Une erreur s'est produite lors de la vérification de l'utilisateur
-    console.error('Erreur lors de la vérification de l\'utilisateur :', error);
-    setIsLoggingIn(false)
-  });
-      
+        .then(user => {
+          if (user) {
+            // L'utilisateur existe, vous pouvez accéder à ses données
+            console.log('Utilisateur trouvé :', user);
+            setUsername("");
+            setPassword("");
+            setErrors({});
+            // save the user in the context
+            login(user);
+            setIsLoggingIn(false)
+          } else {
+            // L'utilisateur n'existe pas
+            console.log('Utilisateur non trouvé');
+            Alert.alert("Incorrect user name or password")
+            setPassword("")
+            setIsLoggingIn(false)
+          }
+        })
+        .catch(error => {
+          // Une erreur s'est produite lors de la vérification de l'utilisateur
+          // console.error('Erreur lors de la vérification de l\'utilisateur :', error);
+          console.log(error.responseData.error)
+          Alert.alert(error.responseData.error)
+          setIsLoggingIn(false)
+        });
+
     }
   }
-useEffect(()=>{
-  
-  find()
-  
-}, [])
+  useEffect(() => {
+
+    find()
+
+  }, [])
 
   //return to the main app
   return (
     <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={50} style={[styles.container]}>
       <StatusBar backgroundColor='orange' />
-  
+
       <ScrollView showsHorizontalScrollIndicator={false} style={styles.formulaire}>
         <Image source={index_logo} style={{ width: screenWidth * 0.9, marginBottom: 25, height: 200, marginTop: 60 }} />
-  
+
         <View >
           <View style={styles.spaceInput}>
             <Ionicons name='person' color={"#F5B041"} size={40} />
             <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your user name' onChangeText={setUsername} value={username} />
           </View>
           {errors.username ? <Text style={[styles.errorText, { marginBottom: 10 }]}>{errors.username}</Text> : null}
-  
+
           <View style={[styles.spaceInput, { marginTop: 30 }]}>
             <Ionicons name='lock-closed' color={"#F5B041"} size={40} />
-            <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your password' 
-            secureTextEntry={seePass}
-            onChangeText={setPassword} 
-            value={password} />
+            <TextInput style={[styles.input, { width: '80%' }]} placeholder='Enter your password'
+              secureTextEntry={seePass}
+              onChangeText={setPassword}
+              value={password} />
             {
-              seePass ? (    <TouchableOpacity 
-                onPress={()=> setSeePass(false)}
-                style={{position: "absolute", right: 15,top: 5}} >
+              seePass ? (<TouchableOpacity
+                onPress={() => setSeePass(false)}
+                style={{ position: "absolute", right: 15, top: 5 }} >
                 <Ionicons style={{}} name='eye-outline' color={"orange"} size={30} />
-                </TouchableOpacity>) : (  <TouchableOpacity 
-            onPress={()=> setSeePass(true)}
-            style={{position: "absolute", right: 15,top: 5}} >
-            <Ionicons style={{}} name='eye-off-outline' color={"orange"} size={30} />
-            </TouchableOpacity>)
+              </TouchableOpacity>) : (<TouchableOpacity
+                onPress={() => setSeePass(true)}
+                style={{ position: "absolute", right: 15, top: 5 }} >
+                <Ionicons style={{}} name='eye-off-outline' color={"orange"} size={30} />
+              </TouchableOpacity>)
             }
-          
+
           </View>
           {errors.password ? <Text style={[styles.errorText, { marginBottom: 10 }]}>{errors.password}</Text> : null}
-  
+
           <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
             <Text style={{ fontSize: 10, color: "grey", marginVertical: 10, textAlign: "right" }}>Forgot password?</Text>
           </TouchableOpacity>
-            {
-              exist == 1 ? (<TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
-                <Text style={{ color: "white" }}>Submit</Text>
-              </TouchableOpacity>): (  <View style={[styles.spaceInput, { justifyContent: 'space-between' }]}>
-            <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
+          {
+            exist ? (<TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
               <Text style={{ color: "white" }}>Submit</Text>
-            </TouchableOpacity>
-  
-            <TouchableOpacity style={[styles.button, styles.createButton]} onPress={() => navigation.navigate("SignUp")}>
-              <Text>Sign Up</Text>
-            </TouchableOpacity>
-          </View>)
-            }
-          
+            </TouchableOpacity>) : (<View style={[styles.spaceInput, { justifyContent: 'space-between' }]}>
+              <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
+                <Text style={{ color: "white" }}>Submit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, styles.createButton]} onPress={() => navigation.navigate("SignUp")}>
+                <Text>Sign Up</Text>
+              </TouchableOpacity>
+            </View>)
+          }
+
         </View>
       </ScrollView>
-  
+
       <View style={[styles.spaceInput, { alignItems: "center", marginTop: 20 }]}>
         <Text style={{ fontStyle: "italic" }}>Designed By @riol</Text>
       </View>
       {isLoggingIn && (
-          <View style={styles.backdrop}>
-            <View style={styles.indicatorContainer}>
-              <Text style={styles.indicatorText}>Logging in progress...</Text>
-              <ActivityIndicator animating={isLoggingIn} size="large" color="#0000ff" />
-            </View>
+        <View style={styles.backdrop}>
+          <View style={styles.indicatorContainer}>
+            <Text style={styles.indicatorText}>Logging in progress...</Text>
+            <ActivityIndicator animating={isLoggingIn} size="large" color="#0000ff" />
           </View>
-        )}
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
