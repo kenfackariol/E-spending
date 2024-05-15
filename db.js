@@ -309,6 +309,189 @@ const deleteExpense = (id) => {
     });
 };
 
+
+const createBudget = (id_utilisateur, id_categorie, montant, debut, fin, status) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'INSERT INTO Budget (id_utilisateur, id_categorie, montant, debut, fin, statut) VALUES (?, ?, ?, ?, ?, ?)',
+            [id_utilisateur, id_categorie, montant, debut, fin, status],
+            function (error) {
+                if (error) reject(`Error inserting budget: ${error}`);
+                if (this.changes > 0) resolve(this.lastID);
+                else reject('Error inserting budget: No rows affected');
+            }
+        );
+    });
+};
+
+
+const updateBudgetStatut = (id, status) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'UPDATE Budget SET statut = ? WHERE id = ?',
+            [status, id],
+            function (error) {
+                if (error) reject(`Error updating budget: ${error}`);
+                if (this.changes > 0) resolve();
+                else reject('Error updating budget: No rows affected');
+            }
+        );
+    });
+};
+
+const updateBudget = (id, id_utilisateur, id_categorie, montant, debut, fin, status) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'UPDATE Budget SET id_utilisateur = ?, id_categorie = ?, montant = ?, debut = ?, fin = ?, statut = ? WHERE id = ?',
+            [id_utilisateur, id_categorie, montant, debut, fin, status, id],
+            function (error) {
+                if (error) reject(`Error updating budget: ${error}`);
+                if (this.changes > 0) resolve();
+                else reject('Error updating budget: No rows affected');
+            }
+        );
+    });
+};
+
+
+const deleteBudget = (id) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'DELETE FROM Budget WHERE id = ?',
+            [id],
+            function (error) {
+                if (error) reject(`Error deleting budget: ${error}`);
+                resolve();
+            }
+        );
+    });
+};
+
+const getBudgets = () => {
+    return new Promise((resolve, reject) => {
+        db.all(
+            `SELECT Budget.id, Budget.id_categorie, Budget.debut, Budget.fin, Budget.montant, Budget.statut, Categorie.nom
+         FROM Budget
+         JOIN Categorie ON Budget.id_categorie = Categorie.id`,
+            [],
+            (error, rows) => {
+                if (error) reject(`Error fetching budgets: ${error}`);
+                resolve(rows);
+            }
+        );
+    });
+};
+
+const getMontantBudget = (id) => {
+    return new Promise((resolve, reject) => {
+        db.get(
+            'SELECT montant FROM Budget WHERE id_categorie = ?',
+            [id],
+            (error, row) => {
+                if (error) reject(`Error fetching budget amount: ${error}`);
+                resolve(row ? row.montant : null);
+            }
+        );
+    });
+};
+
+const getSumMontantByCategory = () => {
+    return new Promise((resolve, reject) => {
+        db.all(
+            `SELECT Categorie.id, Categorie.nom, Depense.id_categorie, SUM(Depense.montant) AS somme_montant
+         FROM Depense
+         JOIN Categorie ON Depense.id_categorie = Categorie.id
+         GROUP BY Categorie.id, Depense.id_categorie`,
+            [],
+            (error, rows) => {
+                if (error) reject(`Error fetching sum by category: ${error}`);
+                resolve(rows);
+            }
+        );
+    });
+};
+
+const getBudget = (id) => {
+    return new Promise((resolve, reject) => {
+        db.get(
+            `SELECT Budget.id, Budget.id_categorie, Budget.debut, Budget.fin, Budget.statut, Budget.montant, Categorie.nom
+         FROM Budget
+         JOIN Categorie ON Budget.id_categorie = Categorie.id
+         WHERE Budget.id = ?`,
+            [id],
+            (error, row) => {
+                if (error) reject(`Error fetching budget: ${error}`);
+                resolve(row || null);
+            }
+        );
+    });
+};
+
+const createNotification = (id_budget, notifs, statut) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'INSERT INTO Notification (id_budget, notifs, statut) VALUES (?, ?, ?)',
+            [id_budget, notifs, statut],
+            function (error) {
+                if (error) reject(`Error inserting notification: ${error}`);
+                resolve(this.lastID);
+            }
+        );
+    });
+};
+
+const updateNotification = (id, id_budget, notifs, statut) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'UPDATE Notification SET statut = ?, id_budget = ?, notifs = ? WHERE id_message = ?',
+            [statut, id_budget, notifs, id],
+            function (error) {
+                if (error) reject(`Error updating notification: ${error}`);
+                resolve();
+            }
+        );
+    });
+};
+
+const deleteNotification = (id) => {
+    return new Promise((resolve, reject) => {
+        db.run(
+            'DELETE FROM Notification WHERE id_message = ?',
+            [id],
+            function (error) {
+                if (error) reject(`Error deleting notification: ${error}`);
+                resolve();
+            }
+        );
+    });
+};
+
+const getNotifications = () => {
+    return new Promise((resolve, reject) => {
+        db.all(
+            'SELECT * FROM Notification',
+            [],
+            (error, rows) => {
+                if (error) reject(`Error fetching notifications: ${error}`);
+                resolve(rows);
+            }
+        );
+    });
+};
+
+const getNotificationByBudgetId = (id) => {
+    return new Promise((resolve, reject) => {
+        db.get(
+            'SELECT * FROM Notification WHERE id_budget = ?',
+            [id],
+            (error, row) => {
+                if (error) reject(`Error fetching notification by budget ID: ${error}`);
+                resolve(row || null);
+            }
+        );
+    });
+};
+
 // Export all functions
 module.exports = {
     alterTable,
@@ -336,5 +519,18 @@ module.exports = {
     getLimitExpense,
     getExpenseByCatId,
     updateExpense,
-    deleteExpense
+    deleteExpense,
+    createBudget,
+    updateBudget,
+    updateBudgetStatut,
+    deleteBudget,
+    getBudgets,
+    getMontantBudget,
+    getSumMontantByCategory,
+    getBudget,
+    createNotification,
+    updateNotification,
+    deleteNotification,
+    getNotifications,
+    getNotificationByBudgetId
 };

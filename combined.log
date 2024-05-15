@@ -52,3 +52,17 @@
 2024-05-14 17:29:21 [INFO]: Category "Epargne" already exists.
 2024-05-14 17:29:21 [INFO]: Category "Service public" already exists.
 2024-05-14 17:29:21 [INFO]: Category "Divers" already exists.
+2024-05-15 05:03:07 [INFO]: Category "Alimentaire" already exists.
+2024-05-15 05:03:07 [INFO]: Category "Vestimentaire" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Loisir" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Transport" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Impot" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Sante" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Education" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Epargne" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Service public" already exists.
+2024-05-15 05:03:08 [INFO]: Category "Divers" already exists.
+2024-05-15 06:00:00 [INFO]: Running processNotifications...
+2024-05-15 06:00:00 [ERROR]: Error processing notifications: getSumMontantByCategory is not a function
+2024-05-15 07:00:00 [INFO]: Running processNotifications...
+2024-05-15 07:00:00 [ERROR]: Error processing notifications: getSumMontantByCategory is not a function

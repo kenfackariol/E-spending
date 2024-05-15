@@ -334,6 +334,128 @@ app.use((error, req, res, next) => {
     });
 });
 
+// Create a Budget
+app.post('/budgets', async (req, res) => {
+    const { id_utilisateur, id_categorie, montant, debut, fin, statut } = req.body;
+    try {
+        const budgetId = await db.createBudget(id_utilisateur, id_categorie, montant, debut, fin, statut);
+        res.json({ budgetId });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Update a Budget Statut
+app.put('/budgets/:id/statut', async (req, res) => {
+    const { id } = req.params;
+    const { statut } = req.body;
+    try {
+        await db.updateBudgetStatut(id, statut);
+        res.json({ message: 'Budget statut updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Update a Budget
+app.put('/budgets/:id', async (req, res) => {
+    const { id } = req.params;
+    const { id_utilisateur, id_categorie, montant, debut, fin, statut } = req.body;
+    try {
+        await db.updateBudget(id, id_utilisateur, id_categorie, montant, debut, fin, statut);
+        res.json({ message: 'Budget updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Delete a Budget
+app.delete('/budgets/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.deleteBudget(id);
+        res.json({ message: 'Budget deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Get all Budgets
+app.get('/budgets', async (req, res) => {
+    try {
+        const budgets = await db.getBudgets();
+        res.json(budgets);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Get Budget by ID
+app.get('/budgets/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const budget = await db.getBudget(id);
+        res.json(budget);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Create a Notification
+app.post('/notifications', async (req, res) => {
+    const { id_budget, notifs, statut } = req.body;
+    try {
+        const notificationId = await db.createNotification(id_budget, notifs, statut);
+        res.json({ notificationId });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Update a Notification
+app.put('/notifications/:id', async (req, res) => {
+    const { id } = req.params;
+    const { id_budget, notifs, statut } = req.body;
+    try {
+        await db.updateNotification(id, id_budget, notifs, statut);
+        res.json({ message: 'Notification updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Delete a Notification
+app.delete('/notifications/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.deleteNotification(id);
+        res.json({ message: 'Notification deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Get all Notifications
+app.get('/notifications', async (req, res) => {
+    try {
+        const notifications = await db.getNotifications();
+        res.json(notifications);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
+// Get Notification by Budget ID
+app.get('/notifications/:id/budget', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const notification = await db.getNotificationByBudgetId(id);
+        res.json(notification);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+});
+
 // Start server
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on http://0.0.0.0:${port}`);
