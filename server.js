@@ -318,22 +318,6 @@ app.get('/users/phone/:numero', async (req, res) => {
     }
 });
 
-
-// Handle undefined routes
-app.use((req, res, next) => {
-    res.status(404).json({ error: 'Route not found' });
-});
-
-// Handle errors
-app.use((error, req, res, next) => {
-    const status = error.statusCode || 500;
-    const message = error.message;
-    const data = error.data;
-    res.status(status).json({
-        error: { message, data },
-    });
-});
-
 // Create a Budget
 app.post('/budgets', async (req, res) => {
     const { id_utilisateur, id_categorie, montant, debut, fin, statut } = req.body;
@@ -382,6 +366,7 @@ app.delete('/budgets/:id', async (req, res) => {
 
 // Get all Budgets
 app.get('/budgets', async (req, res) => {
+    console.log('route matched');
     try {
         const budgets = await db.getBudgets();
         res.json(budgets);
@@ -454,6 +439,21 @@ app.get('/notifications/:id/budget', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error });
     }
+});
+
+// Handle undefined routes
+app.use((req, res, next) => {
+    res.status(404).json({ error: 'Route not found' });
+});
+
+// Handle errors
+app.use((error, req, res, next) => {
+    const status = error.statusCode || 500;
+    const message = error.message;
+    const data = error.data;
+    res.status(status).json({
+        error: { message, data },
+    });
 });
 
 // Start server
