@@ -8,7 +8,7 @@ import { StyleSheet, Text,
     TouchableOpacity,
     Dimensions,
     } from 'react-native';
-import { getNotifications } from "../utils/database";
+import { getNotifications } from "../api/api";
 import { FAB } from 'react-native-paper';
 import Ionicons from "@expo/vector-icons/Ionicons";
 

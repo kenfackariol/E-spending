@@ -82,19 +82,15 @@ export function Budget() {
   }
 
   function compareDates(dateString) {
-    console.log([dateInput])
-    // Convertir la saisie en objet Date
+    // Convert the input to a Date object
     const dateInput = new Date(dateString);
-
-    // Obtenir la date d'aujourd'hui
+  
+    // Obtain today's date with the time set to midnight
     const today = new Date();
-
-    // Comparer les dates
-    if (dateInput < today) {
-      return false;
-    } else {
-      return true;
-    }
+    today.setHours(0, 0, 0, 0);
+  
+    // Compare the dates
+    return dateInput >= today;
   }
   function getbudgetbyid(id) {
     setDisplayPick(false)
@@ -134,7 +130,7 @@ export function Budget() {
   //methode pour modifier un budget
   function handleUpdate() {
     if (/^\d+(\.\d{1,2})?$/.test(bud.montant)) {
-      if (compareDates(bud.periode)) {
+      if (compareDates(bud.debut) && compareDates(bud.fin)) {
          let status = "Enable"
         Alert.alert("Modification", "Êtes-vous sûr?", [
           {
@@ -230,6 +226,10 @@ export function Budget() {
   useEffect(() => {
     refreshPage()
     fetchCategories()
+
+    // init dates
+    setDebut(new Date().toISOString().split("T")[0])
+    setFin(new Date().toISOString().split("T")[0])
   }, [])
   return (
     <View style={styles.contener}>
