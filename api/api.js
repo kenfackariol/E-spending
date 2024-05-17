@@ -64,7 +64,7 @@ export const deleteUser = (id) =>
 export const getUsers = () =>
     fetchWithJson(`${API_BASE_URL}/users`);
 
-export const getUserById = (id) =>
+export const getUser = (id) =>
     fetchWithJson(`${API_BASE_URL}/users/${id}`);
 
 export const getUserByEmail = (email) =>
