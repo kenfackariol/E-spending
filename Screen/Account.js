@@ -8,7 +8,7 @@ import {
     KeyboardAvoidingView,
     TouchableOpacity, Dimensions
 } from 'react-native';
-import { getUser, updateUser } from "../utils/database";
+import { getUser, updateUser } from "../api/api";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { FAB } from 'react-native-paper';
 import { UserContext } from "../contexts/UserContext";
