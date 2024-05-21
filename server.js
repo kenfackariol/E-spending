@@ -5,7 +5,7 @@ const { initCategories } = require('./categories_seed');
 require('./scheduler'); // Import and run the scheduler
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
